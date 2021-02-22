@@ -1,5 +1,7 @@
 {
-  "name": "CG",
-  "integrations": {},
+  "name": "Speed_Cabs",
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

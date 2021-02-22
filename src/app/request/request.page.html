@@ -1,0 +1,30 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title>Búsqueda</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid>
+    <ion-row id="bandera0" size="6">
+      <img id="bandera" src="assets/imgs/bandera.png"/>
+    </ion-row>
+      <div class="ion-padding">
+        <ion-button color="dark" expand="full" (touchend)="startT()">Iniciar Viaje</ion-button>
+      </div>
+    <ion-row>
+      <ion-col id="center">
+       <div color="dark" class="ion-padding">{{txtorigen}}</div>
+       <div color="dark" class="ion-padding">{{locationC}}</div>
+       <div color="dark" class="ion-padding">{{txtdestino}}</div>
+       <div color="dark" class="ion-padding">{{locationCD}}</div>
+       <div color="dark" class="ion-padding">{{txtCosto}}{{costoV}}</div>
+      </ion-col>
+   </ion-row>
+  </ion-grid>
+</ion-content>
+<ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button color="dark" ion-fab color="success"  [disabled]="saveDisabled" (click)="whatsapp()">
+    <ion-icon class="text-color" ios="logo-whatsapp" md="logo-whatsapp"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

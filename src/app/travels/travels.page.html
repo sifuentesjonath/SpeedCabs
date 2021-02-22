@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Viajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-list> 
+    <ion-grid>
+        <ion-item lines="full" fill="clear" *ngFor="let viaje of viajes">
+          <ion-avatar slot="start" class="ion-icon">
+            <img src="assets/imgs/bandera.png">
+          </ion-avatar>
+          <ion-label class="ion-lblP">
+            <ion-row justify-content-between>
+              <ion-col col-6><h2>{{viaje.fecha}}hola</h2></ion-col>
+              <ion-col col-4><h3>{{simbolo}}{{viaje.costoV}}soy</h3></ion-col>
+            </ion-row>
+            <ion-row justify-content-between>
+              <ion-col col-6><p>{{viaje.modelo}}una</p></ion-col>
+              <ion-col col-4><p>{{viaje.metodoP}}prueba</p></ion-col>
+            </ion-row>
+          </ion-label>
+        </ion-item>
+    </ion-grid>    
+  </ion-list>
+</ion-content>
+<ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button color="dark" ion-fab color="success"  [disabled]="saveDisabled" (click)="whatsapp()">
+    <ion-icon class="text-color" ios="logo-whatsapp" md="logo-whatsapp"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

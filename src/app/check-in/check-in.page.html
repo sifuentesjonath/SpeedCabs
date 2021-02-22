@@ -1,0 +1,57 @@
+<ion-header [translucent]="true"> 
+  <ion-toolbar color="dark" hideBackButton>
+    <ion-grid>
+      <ion-row class="img-pos">
+        <ion-col size="12"><img src="assets/imgs/logo.png"/></ion-col>
+      </ion-row>      
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="datos" (ngSubmit)="Check_in()" novalidate>  
+    <ion-list>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-label position="floating">Nombre</ion-label>
+              <ion-input (touchstart)="message(1)" type="text" formControlName="nombre"></ion-input>        
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-label position="floating">Apellido</ion-label>
+              <ion-input (touchstart)="message(2)" type="text" formControlName="apellido" ></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input (touchstart)="message(3)" type="email" formControlName="correo"></ion-input>
+      </ion-item>      
+      <ion-item>
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input (touchstart)="message(4)" type="password" formControlName="password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Confirmar Contraseña</ion-label>
+        <ion-input  (touchstart)="message(5)" type="password" formControlName="passwordC"></ion-input>
+      </ion-item>
+      <ion-grid>
+        <ion-row>
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Celular</ion-label>
+                <ion-input (touchstart)="message(6)" type="tel" formControlName="celular"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+      </ion-grid>      
+    </ion-list>
+    <div class="ion-padding">
+      <ion-button  color="primary" expand="block" [disabled]="datos.invalid">Crear una Cuenta</ion-button>
+    </div>
+  </form> 
+</ion-content>

@@ -1,0 +1,48 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title>{{mensajeT}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (tap)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content  no-bounce>
+  <div #pleaseConnect id="please-connect">
+    <p>Por favor conectate a Internet...</p>
+  </div>
+  <div #map id="map">
+    <ion-spinner class="align-spinner"></ion-spinner>
+  </div>
+</ion-content>
+<ion-bottom-drawer [(state)]="drawerState" [minimumHeight]="minimumHeight" [dockedHeight]="dockedHeight"
+    [shouldBounce]="shouldBounce" [distanceTop]="distanceTop" >
+    <ion-button class="btn-icon" expand="block" fill="clear" color="dark" >
+      <ion-icon class="drawer-icon" name="remove-outline" ></ion-icon>
+    </ion-button>
+    <ion-content>
+      <ion-list>
+      <ion-grid>
+        <ion-row class="align-center">
+          <div id="image" fill="clear">
+            <img class="profilepic padding-bottom" src="{{imgP}}" (error)="defaultImg()"/>
+          </div>
+          <ion-col class="txtC">
+            <div>{{txtC}}<p id="txtB">{{conductor}}</p></div> 
+            <div><p>{{modelo}}</p></div>
+            <div><p>{{placas}}</p></div>
+            <div>{{txtCosto}}<p id="txtB">{{costo}}</p></div>
+            <div>{{txtO}}<p id="txtB">{{origen}}</p></div>
+            <div>{{txtD}}<p id="txtB">{{destino}}</p></div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      </ion-list>
+    </ion-content>
+</ion-bottom-drawer>
+<ion-fab horizontal="end" vertical="bottom" slot="fixed">
+  <ion-fab-button color="dark" ion-fab color="success"  [disabled]="saveDisabled" (click)="whatsapp()">
+    <ion-icon class="text-color" ios="logo-whatsapp" md="logo-whatsapp"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+

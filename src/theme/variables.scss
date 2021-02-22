@@ -3,6 +3,20 @@
 
 /** Ionic CSS Variables **/
 :root {
+  .font-header{
+    color: white;
+  }
+  .img-pos{
+    margin-left: 20%;
+    margin-right: 20%;
+  }
+  /*Whatsapp*/
+  --ion-color-whatsapp: #03e676;
+  --ion-color-whatsapp-rgb: 56, 128, 255;
+  --ion-color-whatsapp-contrast: #ffffff;
+  --ion-color-whatsapp-contrast-rgb: 255, 255, 255;
+  --ion-color-whatsapp-shade: #3171e0;
+  --ion-color-whatsapp-tint: #4c8dff;
   /** primary **/
   --ion-color-primary: #3880ff;
   --ion-color-primary-rgb: 56, 128, 255;

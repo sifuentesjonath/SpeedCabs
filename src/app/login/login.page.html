@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid>
+    <ion-row class="img-pos">
+        <ion-col size="12">
+          <ion-img src="assets/imgs/logo.png"></ion-img>
+        </ion-col>
+    </ion-row>      
+  </ion-grid>
+  <form [formGroup]="datos" novalidate>  
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating">Correo eléctronico</ion-label>
+        <ion-input type="text" name="correo" formControlName="correo"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input type="password" name="password" formControlName="password"></ion-input>
+      </ion-item>
+      <ion-col class="ion-padding">
+        <div><ion-button color="white" size="small" fill="clear" (tap)="passwordR()" (click)="passwordR()"><p>¿Olvidaste tu contraseña?</p></ion-button></div>
+      </ion-col>
+    </ion-list>
+    <div class="ion-padding">
+      <ion-button color="dark" expand="block" [disabled]="datos.invalid" (tap)="enter_home()" (click)="enter_home()">Ingresar</ion-button> 
+    </div>
+  </form>
+  <div class="ion-padding">
+    <ion-button color="dark" expand="block"  (tap)="check_in()" (click)="check_in()">Registrarse</ion-button>
+  </div>
+</ion-content>

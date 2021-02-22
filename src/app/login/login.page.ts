@@ -55,8 +55,7 @@ export class LoginPage implements OnInit {
     this.loadingCtrl.dismiss();
   }
   async enter_home(){
-    this.router.navigate(['/home']);
-    /*let pass=this.aes256.encrypt(this.datos.value.password);
+    let pass=this.aes256.encrypt(this.datos.value.password);
     let body={correo:this.datos.value.correo,password:this.datos.value.password};
     this.loading();
     await this.fire.login(body).then((res)=>{
@@ -73,7 +72,7 @@ export class LoginPage implements OnInit {
     }),err => {
       this.dismiss_loding();
       this.message.error_emailPass();
-    };*/
+    };
     /*this.fire.login(body).then(res=>{
       setTimeout(() => {
         this.dismiss_loding();

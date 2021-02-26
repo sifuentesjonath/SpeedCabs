@@ -25,9 +25,7 @@ import { environment } from '../environments/environment';
 import { AngularFirestoreModule,SETTINGS } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 //Google Maps
-import {Geolocation} from '@ionic-native/geolocation/ngx';
-import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
-
+import { Geolocation} from '@ionic-native/geolocation/ngx';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -53,7 +51,6 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
     SplashScreen,
     AppVersion,
     Geolocation,
-    NativeGeocoder,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     //{ provide: SETTINGS, useValue: {} }
   ],

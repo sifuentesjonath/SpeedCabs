@@ -1,6 +1,5 @@
 import { Component, OnInit,AfterViewInit, OnChanges, EventEmitter,Input, ElementRef, Renderer2, Output, SimpleChanges } from '@angular/core';
 import { Platform,LoadingController, MenuController,DomController } from '@ionic/angular';
-import { Geolocation } from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';//Manejo de cache
 import { Router }from '@angular/router';
 import { DrawerState } from '../services/Drawer/drawer-state';

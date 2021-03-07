@@ -3,9 +3,10 @@ import {Validators,FormBuilder,FormGroup,FormControl} from '@angular/forms';
 import {ToastController,LoadingController} from '@ionic/angular';
 import { Storage } from '@ionic/storage';//Manejo de cache
 import { Router }from '@angular/router';
-
 //imports services
 import { MessagesService } from '../services/Messages/messages.service';
+import { FirebaseService } from '../services/Firebase/firebase.service';
+import { Client} from '../userData/user-interface'
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './edit-profile.page.html',
@@ -22,7 +23,9 @@ export class EditProfilePage implements OnInit {
   mensaje:any = {};
   private datos: FormGroup;
   private isLoading = false;
-  constructor(private loadingCtrl:LoadingController,private router:Router,private storage:Storage,private formBuilder: FormBuilder,private message_:MessagesService,private elementRef:ElementRef,private toastCtrl:ToastController) {
+  private client:Client;
+  private idClient:string='';
+  constructor(private fire:FirebaseService,private loadingCtrl:LoadingController,private router:Router,private storage:Storage,private formBuilder: FormBuilder,private message_:MessagesService,private elementRef:ElementRef,private toastCtrl:ToastController) {
     this.datos = this.formBuilder.group({
       'nombre': new FormControl('',[Validators.required]),
       'apellido': new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(25)]),
@@ -30,105 +33,77 @@ export class EditProfilePage implements OnInit {
       'celular':new FormControl('', [Validators.required,Validators.pattern(/^[0-9_-]{6,18}$/)]),
     });
   }
-  ngOnInit() {
-  }
-  //metodos
-  async loading() {
-    this.isLoading = true;
-    return await this.loadingCtrl.create({
-      // duration: 5000,
-      message:'Cargando'
-    }).then(a => {
-      a.present().then(() => {
-        //console.log('presented');
-        if (!this.isLoading) {
-          a.dismiss().then(() => console.log('abort presenting'));
-        }
-      });
-    });
-  }
-  async dismiss_loding() {
-    this.isLoading = false;
-    return await this.loadingCtrl.dismiss().then(() => console.log('dismissed'));
-  }
+  //Metodos
   /*Antes que cargue la ventana consulta los datos del perfil para mostrarolos
     @this.nombre{String}
     @this.apellido{String}
     @this.correo{String}
     @this.celular{String}
   */
-  ionViewCanEnter(){
-    /*this.storage.get('confirmador').then((res) => {
-      if(res!=null){
-            var url = 'http://citcar.relatibyte.mx//mobile/Api/EditPerfil.php';
-            this.correoO=res;
-            this.nombre='';
-            this.apellido='';
-            this.correo='';
-            this.celular='';
-            //let pass=Md5.init(this.datos.value.password);
-            let body=JSON.stringify({mail: this.correoO});
-            this.http.post(url,body).subscribe(res => {
-              this.loading();
-              setTimeout(() => {
-                if(res===0){
-                  this.message_.general_error();
-                }      
-                else if(res===1){
-                  this.message_.error_email(),
-                }
-                else{
-                  this.nombre=  res[0].cliente_nombre;
-                  this.apellido=res[0].cliente_apellido;
-                  this.correo=  res[0].cliente_correo;
-                  this.celular= res[0].cliente_celular;
-                }
-              },1000);  
-              setTimeout(() => {
-                this.dismiss_loding();
-              },1000);
-            },err => {
-              this.nombre='';
-              this.apellido='';
-              this.correo='';
-              this.celular='';
-            }); 
+  async ngOnInit() {
+    this.storage.get('confirmador').then((res) => {
+      this.storage.get('Id').then((id) => {
+        if(res!=null){
+          if(id!=null){
+            this.loading();
+            this.idClient=id;
+            const confirmador=JSON.parse(res);
+            this.get_data(id,confirmador);
+          }
+          else{
+            this.message_.general_error();
+          }
         }
         else{
-          this.message_.warning_fields();
-        }              
-    });*/
+          this.message_.general_error();
+        }
+      });
+    });
   }
-  /* Envia los datos para ser actualizados
-  @nombre{String}
-  @apellido{String}
-  @correo{String}
-  @celular{String}
-  @return res{int}
-  @return res{Boolean}
-  */
-  edit(){
+  /*ionViewCanEnter(){}*/
+  private async get_data(id:string,confirmador){
+    await this.fire.get_client(id).subscribe(res=>{
+      this.client=res;
+      this.datos.setValue({nombre:res.name,apellido:res.lastname,correo:confirmador.correo,celular:res.phone});
+      setTimeout(()=>{
+        this.dismiss();
+      },400);
+    });
+  }
+  private dismiss(){
+    this.message_.dismiss_loding();
+  }
+  private loading(){
+    this.message_.loading();
+  }
+  /* Envia los datos para ser actualizados*/
+  private async edit(){
+    if(this.datos.value.nombre!=''&&this.datos.value.apellido!=''&&this.datos.value.celular!=''){
+      if(this.idClient!=''&&this.datos.value.correo!=''){
+        this.loading();
+        var body={name:this.datos.value.nombre,lastname:this.datos.value.apellido,email:this.datos.value.correo,phone:this.datos.value.celular};
+        var date={email:this.client.email,phone:this.client.phone};
+        await this.fire.updateClient(this.idClient,body,date).then(()=>{
+          setTimeout(()=>{
+            this.dismiss();
+            if(this.fire.get_check()==true){
+              this.storage.set('NombreC',this.datos.value.nombre+' '+this.datos.value.apellido);  
+              this.message_.successfull_edit();
+            }
+            else{
+              this.message_.edit_error();
+            }
+          },500);
+        }).catch(err=>this.dismiss());
+      }
+      else{
+        this.message_.warning_fields();
+      }
+    }
+    else{
+      this.message_.warning_fields();
+    }
     /*if(this.datos.value.nombre!=''&&this.datos.value.apellido!=''&&this.datos.value.celular!=''){
-        var url = 'http://citcar.relatibyte.mx//mobile/Api/SavePerfil.php';
-        let body=JSON.stringify({nombre:this.datos.value.nombre,apellido:this.datos.value.apellido,correoO:this.correoO,correo:this.datos.value.correo,celular:this.datos.value.celular});
-        this.http.post(url,body).subscribe(res => {
-          if(res===0){
-            this.message_.general_error();
-          }      
-          else if(res==false){
-            this.message_.edit_error();
-          }
-          else{ 
-            this.mensaje=res;
-            //console.log(this.mensaje);
-            this.message_.successfull_edit();
-            //this.pass=res[0].cliente_pass;
-            //this.storage.set('Apodo',this.nick);
-            this.storage.set('confirmador',this.datos.value.correo);              
-            this.storage.set('NombreC',this.datos.value.nombre+' '+this.datos.value.apellido); 
-            //console.dir(nick+','+pass);
-    
-          }
         },err => {
           /*console.log('Error: ' + err.error);
           console.log('Name: ' + err.name);

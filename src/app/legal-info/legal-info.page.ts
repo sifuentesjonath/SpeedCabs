@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router }from '@angular/router';
+import { SocialMediaService} from '../services/Media/social-media.service';
 
 @Component({
   selector: 'app-legal-info',
@@ -11,7 +12,7 @@ export class LegalInfoPage implements OnInit {
     'Terminos y Condiciones',
     'Aviso de Privacidad'
   ];
-  constructor(private router:Router) { }
+  constructor(private social:SocialMediaService,private router:Router) { }
 
   ngOnInit() {
   }
@@ -31,6 +32,6 @@ export class LegalInfoPage implements OnInit {
       this.router.navigate(['/app-info']);
   }
   whatsapp(){                                            
-    window.open("https://api.whatsapp.com/send?phone=5213411234404",'_system','location=yes');
+    this.social.whatsapp();
   } 
 }

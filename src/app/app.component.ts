@@ -59,7 +59,7 @@ export class AppComponent {
       this.statusBar.styleDefault();
       setTimeout(() => {
         this.storage.get('Id').then((res) => {
-          this.storage.get('NombreC').then((resu) => {
+          this.storage.get('NombreC').then((resu) => { 
           this.storage.get('idV').then((resI) => {    
             if(res!=null){
               if(resI!=null){    
@@ -81,14 +81,16 @@ export class AppComponent {
                     } 
                   },500);
                 },err => {});*/
+                this.router.navigateByUrl('/traveling');
+
               }
               else{
-                this.router.navigate['/home'];
+                this.router.navigateByUrl('/home');
                 this.hide_splashScreen(); 
               }
             }
             else{
-              this.router.navigate['/home'];
+              this.router.navigateByUrl('/login');
               //this.router.navigate['/login'];
               this.hide_splashScreen(); 
             } 

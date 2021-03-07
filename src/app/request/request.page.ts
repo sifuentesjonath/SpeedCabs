@@ -4,6 +4,8 @@ import { Router }from '@angular/router';
 import { MenuController,LoadingController} from '@ionic/angular';
 //imports services
 import { MessagesService } from '../services/Messages/messages.service';
+import { SocialMediaService} from '../services/Media/social-media.service';
+
 @Component({
   selector: 'app-request',
   templateUrl: './request.page.html',
@@ -20,11 +22,33 @@ export class RequestPage implements OnInit {
   txtdestino:String='Terminar viaje en:';
   txtCosto:String='Tarifa: $';
   isLoading = false;
-  constructor(private router:Router,private message:MessagesService,private menu:MenuController,private loadingCtrl:LoadingController,private storage:Storage) {
+  constructor(private social:SocialMediaService,private router:Router,private message:MessagesService,private menu:MenuController,private loadingCtrl:LoadingController,private storage:Storage) {
     this.menu.enable(false);
   }
 
   ngOnInit() {
+    this.storage.get('NombreC').then((resu) => {  
+      this.storage.get('ubicacionC').then((res) => {
+        this.storage.get('ubicacionCD').then((res2) => {
+          this.storage.get('Id').then((res3) => { 
+            if(resu!=null&&res!=null&&res3!=null){ 
+              this.cliente=resu;
+              this.locationC=res;
+              this.locationCD=res2;
+              this.idCliente=res3;
+              //definir costo
+              this.txtCosto='Tarifa: $';
+              this.txtorigen='Empezar viaje en:';
+              this.txtdestino='Terminar viaje en:';
+              this.costoV='40.0 a 50.0 dentro de la ciudad y de 60 o más fuera de la ciudad';         
+            }
+            else{
+              this.router.navigate(['/home']);        
+            }
+          });
+        });   
+      });   
+    });    
   }
   //metodos
   async loading() {
@@ -46,37 +70,13 @@ export class RequestPage implements OnInit {
     return await this.loadingCtrl.dismiss().then(() => console.log('dismissed'));
   }
   whatsapp(){                                            
-    window.open("https://api.whatsapp.com/send?phone=5213411234404",'_system','location=yes');
+    this.social.whatsapp();
   }
   /*optiene la ubicación del cliente y la ubicación a donde el cliente se quiere dirigir.
     @this.locationC{string}
     @this.locationCD{string}
   */
-  ionViewCanEnter(){
-    this.storage.get('NombreC').then((resu) => {  
-      this.storage.get('ubicacionC').then((res) => {
-        this.storage.get('ubicacionCD').then((res2) => {
-          this.storage.get('Id').then((res3) => { 
-            if(resu!=null&&res!=null&&res3!=null){ 
-            //if(resu!=null&&res!=null&&res3!=null&&res2!=null){
-              this.cliente=resu;
-              this.locationC=res;
-              this.idCliente=res3;
-              this.locationCD=res2;
-              //definir costo
-              this.txtCosto='Tarifa: $';
-              this.txtorigen='Empezar viaje en:';
-              this.txtdestino='Terminar viaje en:';
-              this.costoV='40.0 a 50.0 dentro de la ciudad y de 60 o más fuera de la ciudad';         
-            }
-            else{
-              this.router.navigate(['/home']);        
-            }
-          });
-        });   
-      });   
-    });
-  }
+  //ionViewCanEnter(){}
   startT(){
     this.router.navigate(['/traveling']);
     //if(this.locationC!=''&&this.locationC!=null){

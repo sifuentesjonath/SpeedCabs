@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <form [formGroup]="datos" (ngSubmit)="Check_in()" novalidate>  
+  <form [formGroup]="datos" novalidate>  
     <ion-list>
       <ion-grid>
         <ion-row>
@@ -51,7 +51,7 @@
       </ion-grid>      
     </ion-list>
     <div class="ion-padding">
-      <ion-button  color="primary" expand="block" [disabled]="datos.invalid">Crear una Cuenta</ion-button>
+      <ion-button  color="primary" expand="block" [disabled]="datos.invalid" (tap)="check_in()" (click)="check_in()">Crear una Cuenta</ion-button>
     </div>
   </form> 
 </ion-content>

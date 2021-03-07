@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router }from '@angular/router';
 import { Storage } from '@ionic/storage';//Manejo de cache
+import { AlertController } from '@ionic/angular';
+import { ImagePicker } from '@ionic-native/image-picker/ngx';
+
+//Services
+import { FirebaseService } from '../services/Firebase/firebase.service';
+import { SocialMediaService} from '../services/Media/social-media.service';
+import { MessagesService } from '../services/Messages/messages.service';
+
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
@@ -13,7 +21,7 @@ export class ProfilePage implements OnInit {
   imgPA:any='';
   cliente:Number;
   confirmador:any;
-  constructor(private router:Router,private storage:Storage) { 
+  constructor(private imagePicker: ImagePicker,private alertCtrl:AlertController,private message:MessagesService,private social:SocialMediaService,private fire:FirebaseService,private router:Router,private storage:Storage) { 
     this.data.nombre = '';
     this.data.appm = '';
     this.data.mail = '';
@@ -30,7 +38,7 @@ export class ProfilePage implements OnInit {
             //this.imgPA=this.imgP;
             this.storage.get('confirmador').then((res) => {
               if(res!=null){
-                this.confirmador=res;
+                this.confirmador=JSON.parse(res);
               }
             });
           }
@@ -63,21 +71,99 @@ export class ProfilePage implements OnInit {
       });
     }*/
   }
-  defaultImg(){
-    this.imgP='assets/imgs/profile.jpeg';
+  private async successfull_resPass() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Perfecto',
+      //subHeader: 'Error',
+      message:"Se te mandará un correo para cambiar la contraseña.",
+      buttons: [
+        {
+          text:'Entendido',
+          handler: () => {
+            this.close();
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
-  close(){
+  private async warning_password() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Advertencia',
+      //subHeader: 'Error',
+      message:" ¿Desea cambiar su contraseña?",
+      buttons: [
+        {
+          text:'Cancelar',
+        },
+        {
+          text:'Aceptar',
+          handler: () => {
+              this.message.loading();
+              setTimeout(()=>{
+                this.fire.change_password(this.confirmador.correo);
+                this.message.dismiss_loding().then(()=>{
+                  this.successfull_resPass();
+                },err=>{
+                  this.message.error_resPass();
+                });
+              },1000);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  private close(){
     this.storage.clear();
+    this.fire.close();
     this.router.navigate(['/login']);
   }
-  whatsapp(){                                            
-    window.open("https://api.whatsapp.com/send?phone=5213411234404",'_system','location=yes');
+  private whatsapp(){                                            
+    this.social.whatsapp();
   }
-  edit(){
+  private edit(){
     this.router.navigate(['/edit-profile']);
   }
-  change_pass(){
-    this.router.navigate(['/change-password']);
+  private async change_pass(){
+    /*this.router.navigate(['/change-password']);*/
+    this.warning_password();
+  }
+  private defaultImg(){
+    this.imgP='assets/imgs/profile.jpeg';
+  }
+  private async change_img(){
+    this.imagePicker.hasReadPermission().then((result) => {
+      if(result == false){
+        // no callbacks required as this opens a popup which returns async
+        this.imagePicker.requestReadPermission();
+      }
+      else if(result == true){
+        this.imagePicker.getPictures({
+          maximumImagesCount: 1
+        }).then((results) => {
+          for (var i = 0; i < results.length; i++) {
+            this.uploadImageToFirebase(results[i]);
+          }
+        },(err) => console.log(err)
+        );
+      }
+    },(err) => {
+      console.log(err);
+    });
+  }
+  uploadImageToFirebase(image){
+    //image = normalizeURL(image);
+    //uploads img to firebase storage
+    //this.fire.uploadImage(image).then(photoURL => {
+      /*let toast = this.toastCtrl.create({
+        message: 'Image was updated successfully',
+        duration: 3000
+      });
+      toast.present();*/
+    //});
   }
 
 }

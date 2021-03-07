@@ -10,9 +10,11 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-grid>
     <ion-row id="al-center">
-      <ion-item id="image" fill="clear">
-        <img id="profilepic padding-bottom" src="{{imgP}}" (error)="defaultImg()" />
-      </ion-item>
+      <!--<ion-item id="image" fill="clear">-->
+        <ion-button fill="clear" id="image_1" (tap)="change_img()" (click)="change_img()">
+          <img id="profilepic padding-bottom" src="{{imgP}}" (error)="defaultImg()" />
+        </ion-button>
+      <!--</ion-item>-->
       <ion-item class="ion-padding" id="btn-img">
           <ion-chip col-12 id="nameC">
             <ion-avatar (click)="changeImg()">

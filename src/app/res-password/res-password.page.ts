@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular';
+import { Router }from '@angular/router';
+import {Validators,FormBuilder,FormGroup,FormControl} from '@angular/forms';
+
+//Services
+import { FirebaseService } from '../services/Firebase/firebase.service';
 import { MessagesService } from '../services/Messages/messages.service';
 @Component({
   selector: 'app-res-password',
@@ -8,33 +14,64 @@ import { MessagesService } from '../services/Messages/messages.service';
 export class ResPasswordPage implements OnInit {
   data:any = {};
   mensaje:any = {};
-  constructor(private message:MessagesService) { }
+  private datos: FormGroup;
+  constructor(private formBuilder: FormBuilder,private fire:FirebaseService,private router:Router,private alertCtrl:AlertController,private message:MessagesService) {
+    this.datos = this.formBuilder.group({
+      'correo': new FormControl('', [Validators.required,Validators.email,Validators.minLength(7)]),
+    });
+  }
 
   ngOnInit() {
   }
+  private async successfull_resPass() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Perfecto',
+      //subHeader: 'Error',
+      message:"¡Listo! Revisa tu correo electrónico",
+      buttons: [
+        {
+          text:'Entendido',
+          handler: () => {
+            this.close();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  private async warning_password() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Advertencia',
+      //subHeader: 'Error',
+      message:"Se enviará un correo para poder cambiar tu contraseña",
+      buttons: [
+        {
+          text:'Cancelar',
+        },
+        {
+          text:'Aceptar',
+          handler: () => {
+              this.message.loading();
+              setTimeout(()=>{
+                this.fire.change_password(this.datos.value.correo);
+                this.message.dismiss_loding().then(()=>{
+                  this.successfull_resPass();
+                },err=>{
+                  this.message.error_resPass();
+                });
+              },1000);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  private close(){
+    this.router.navigate(['/login']);
+  }
   sendR(){
-    /*var url = 'http://citcar.relatibyte.mx//mobile/Api/resPassApi.php';
-    //let password=Md5.init(this.data.password);
-    let body=JSON.stringify({correo:this.data.correo});
-    this.http.post(url,body).subscribe(res => {
-      if(res===0){
-        this.message.error_email1();
-      }
-      else{ 
-        this.mensaje=res;
-        //console.log(this.mensaje);
-        this.message.successfull_resPass();
-        //this.pass=res[0].cliente_pass;
-        //this.storage.set('Apodo',this.nick);
-        //this.storage.set('confirmador',this.nick+this.pass);
-        //console.dir(nick+','+pass);
-
-      }
-    },err => {
-      console.log('Error: ' + err.error);
-      console.log('Name: ' + err.name);
-      console.log('Message: ' + err.message);
-      console.log('Status: ' + err.status);
-    });*/
+    this.warning_password();
   }
 }

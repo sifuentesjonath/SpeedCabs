@@ -8,29 +8,28 @@ export class AuthenticationService {
   //private authState:boolean= false;
   constructor(private afAuth: AngularFireAuth) { 
   }
-  registerUser(value) {
-    return new Promise<any>((resolve, reject) => {
-      this.afAuth.auth.createUserWithEmailAndPassword(value.correo, value.password)
-        .then(
-          res => resolve(res),
-          err => reject(err))
+  public async registerUser(correo,password) {
+    await new Promise<any>((resolve,reject) => {
+      this.afAuth.auth.createUserWithEmailAndPassword(correo,password).then(res =>{ 
+        resolve(res);
+      }).catch((err)=>{
+        reject(err);
+      });
     });
   }
-  async loginUser(value) {
+  public async loginUser(value) {
     await new Promise<any>((resolve,reject) => {
       this.afAuth.auth.signInWithEmailAndPassword(value.correo,value.password).then(res => {
-          resolve(res);
+        resolve(res);
       }).catch((err)=>{
-        console.log(err);
         reject(err);
       })
     }); 
   }
-  logoutUser() {
-    return new Promise((resolve, reject) => {
+  public async logoutUser() {
+    return await new Promise((resolve, reject) => {
       if (this.afAuth.auth.currentUser) {
         this.afAuth.auth.signOut().then(() => {
-            console.log("LOG Out");
             resolve(true);
           }).catch((error) => {
             reject();
@@ -38,7 +37,18 @@ export class AuthenticationService {
       }
     })
   }
-  userDetails() {
+  public async updateUser(email:string){
+    //this.afAuth.auth.confirmPasswordReset();
+    await new Promise<any>((resolve,reject) => {
+      this.afAuth.auth.sendPasswordResetEmail(email).then(res =>{ 
+        resolve(res);
+      }).catch((err)=>{
+        reject(err);
+      });
+    });
+    this.afAuth.auth.sendPasswordResetEmail
+  }
+  private userDetails() {
     return this.afAuth.user;
   }
 }

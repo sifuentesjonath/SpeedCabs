@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController} from '@ionic/angular';
 import { Storage } from '@ionic/storage';//Manejo de cache
-
+//import Services
+import { SocialMediaService} from '../services/Media/social-media.service';
 @Component({
   selector: 'app-travels',
   templateUrl: './travels.page.html',
@@ -12,7 +13,7 @@ export class TravelsPage implements OnInit {
   pausa:boolean=false;
   isLoading:Boolean=false;
   simbolo:String='';
-  constructor(private storage: Storage,private loadingCtrl:LoadingController) { 
+  constructor(private social:SocialMediaService,private storage: Storage,private loadingCtrl:LoadingController) { 
   }
   async loading() {
     this.isLoading = true;
@@ -69,6 +70,6 @@ export class TravelsPage implements OnInit {
   ngOnInit() {
   }
   whatsapp(){                                            
-    window.open("https://api.whatsapp.com/send?phone=5213411234404",'_system','location=yes');
+    this.social.whatsapp();
   }
 }

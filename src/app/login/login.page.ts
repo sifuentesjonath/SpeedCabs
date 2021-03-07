@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController,LoadingController} from '@ionic/angular';
+import { MenuController} from '@ionic/angular';
 import { Router }from '@angular/router';
 import {Validators,FormBuilder,FormGroup,FormControl} from '@angular/forms';
 //import { RegistrarsePage } from '../registrarse/registrarse';
@@ -21,9 +21,8 @@ export class LoginPage implements OnInit {
   pass:any = {};
   correoO:String;
   cliente:String;
-  isLoading = false;
   private datos: FormGroup;
-  constructor(private storage: Storage,private formBuilder: FormBuilder,private fire:FirebaseService,private message:MessagesService,private aes256:Aes256Service,private router:Router,private menu:MenuController,private loadingCtrl:LoadingController) {
+  constructor(private storage: Storage,private formBuilder: FormBuilder,private fire:FirebaseService,private message:MessagesService,private aes256:Aes256Service,private router:Router,private menu:MenuController) {
     this.menu.enable(false);
     this.datos = this.formBuilder.group({
       'correo': new FormControl('', [Validators.required, Validators.email]),
@@ -35,44 +34,28 @@ export class LoginPage implements OnInit {
   }
   ionViewCanEnter(){}
 
-  async loading() {
-    this.isLoading = true;
-    return await this.loadingCtrl.create({
-      // duration: 5000,
-      message:'Cargando'
-    }).then(a => {
-      a.present().then(() => {
-        //console.log('presented');
-        if (!this.isLoading) {
-          a.dismiss().then(() =>{});
-        }
-      });
-    });
-  }
-  async dismiss_loding() {
-    this.isLoading = false;
-    //return await this.loadingCtrl.dismiss().then(() => console.log('dismissed'));
-    this.loadingCtrl.dismiss();
-  }
-  async enter_home(){
-    let pass=this.aes256.encrypt(this.datos.value.password);
+  private async enter_home(){
     let body={correo:this.datos.value.correo,password:this.datos.value.password};
-    this.loading();
+    this.message.loading();
     await this.fire.login(body).then((res)=>{
       setTimeout(()=>{
-        this.dismiss_loding();
-        if(this.fire.get_state()===true){
-          this.storage.set('confirmador',JSON.stringify(body));
-          this.router.navigate(['/home']);
-        }
-        else{
-          this.message.error_emailPass();         
-        }
-      },1000);
-    }),err => {
-      this.dismiss_loding();
-      this.message.error_emailPass();
-    };
+        var compare=this.fire.get_state();
+        setTimeout(()=>{
+          this.message.dismiss_loding();
+          if(compare==true){
+            this.storage.set('confirmador',JSON.stringify({correo:this.datos.value.correo}));
+            this.menu.enable(true);
+            this.router.navigate(['/home']);
+          }
+          else{
+            this.message.error_emailPass();         
+          }
+        },500);
+      },500);
+    },err => {
+      this.message.dismiss_loding();
+      this.message.error_emailPass();         
+    });
     /*this.fire.login(body).then(res=>{
       setTimeout(() => {
         this.dismiss_loding();
@@ -116,19 +99,11 @@ export class LoginPage implements OnInit {
     },err => {});*/
     //this.router.navigate(['/home']);
   }
-  passwordR(){
-    //let currentIndex = this.navCtrl.getActive().index;
-    /*this.navCtrl.push(ResPasswordPage).then(() => {
-        //this.navCtrl.remove(currentIndex);
-    });*/
+  private passwordR(){
     this.router.navigate(['/res-password']);
     
   }
-  check_in(){
-    //let currentIndex = this.navCtrl.getActive().index;
-    //this.navCtrl.push(RegistrarsePage).then(() => {
-        //this.navCtrl.remove(currentIndex);
-    //});
+  private check_in(){
     this.router.navigate(['/check-in']);
   }
 

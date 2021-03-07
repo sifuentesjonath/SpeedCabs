@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController,LoadingController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessagesService {
-  
-  constructor(private alertCtrl:AlertController) { }
+  private isLoading = false;
+  constructor(private alertCtrl:AlertController,private loadingCtrl:LoadingController) { }
 
   async error_emailPass() {
     const alert = await this.alertCtrl.create({
@@ -44,7 +44,7 @@ export class MessagesService {
       //cssClass: 'my-custom-class',
       header:'Error',
       //subHeader: 'Error',
-      message:"Ocurrio un error al editar, intentelo de nuevo.",
+      message:"Ocurrio un error al editar, intentelo de nuevo",
       buttons: ['Entendido']
     });
     await alert.present();
@@ -54,7 +54,7 @@ export class MessagesService {
       //cssClass: 'my-custom-class',
       header:'Error',
       //subHeader: 'Error',
-      message:"Email en uso, por favor intentelo de nuevo",
+      message:"Correo o teléfono inválido, por favor intentelo de nuevo",
       buttons: ['Entendido']
     });
     await alert.present();
@@ -64,7 +64,7 @@ export class MessagesService {
       //cssClass: 'my-custom-class',
       header:'Error',
       //subHeader: 'Error',
-      message:"Email incorrecto,por favor verifique su correo",
+      message:"Correo incorrecto,por favor verifique su correo",
       buttons: ['Entendido']
     });
     await alert.present();
@@ -85,6 +85,16 @@ export class MessagesService {
       header:'Error',
       //subHeader: 'Error',
       message:"Contraseña actual no coincide",
+      buttons: ['Entendido']
+    });
+    await alert.present();
+  }
+  async error_resPass() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Error',
+      //subHeader: 'Error',
+      message:"Contraseña no restablecida",
       buttons: ['Entendido']
     });
     await alert.present();
@@ -121,16 +131,6 @@ export class MessagesService {
     });
     await alert.present();
   }
-  async successfull_resPass() {
-    const alert = await this.alertCtrl.create({
-      //cssClass: 'my-custom-class',
-      header:'Perfecto',
-      //subHeader: 'Error',
-      message:"Se te mandará un correo para cambiar la contraseña.",
-      buttons: ['Entendido']
-    });
-    await alert.present();
-  }
   async successfull_edit() {
     const alert = await this.alertCtrl.create({
       //cssClass: 'my-custom-class',
@@ -150,5 +150,40 @@ export class MessagesService {
       buttons: ['Entendido']
     });
     await alert.present();
+  }
+  //LoadController
+  async loading() {
+    this.isLoading = true;
+    return await this.loadingCtrl.create({
+      // duration: 5000,
+      message:'Cargando'
+    }).then(a => {
+      a.present().then(() => {
+        //console.log('presented');
+        if (!this.isLoading) {
+          a.dismiss().then(() =>{});
+        }
+      });
+    });
+  }
+  //
+  async loading_proccess() {
+    this.isLoading = true;
+    return await this.loadingCtrl.create({
+      // duration: 5000,
+      message:'Procesando'
+    }).then(a => {
+      a.present().then(() => {
+        //console.log('presented');
+        if (!this.isLoading) {
+          a.dismiss().then(() =>{});
+        }
+      });
+    });
+  }  
+  //
+  async dismiss_loding() {
+    this.isLoading = false;
+    await this.loadingCtrl.dismiss();
   }
 }

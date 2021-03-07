@@ -13,13 +13,14 @@
         <ion-button color="dark" expand="full" (touchend)="startT()">Iniciar Viaje</ion-button>
       </div>
     <ion-row>
-      <ion-col id="center">
+      <ion-card id="center">
        <div color="dark" class="ion-padding">{{txtorigen}}</div>
        <div color="dark" class="ion-padding">{{locationC}}</div>
        <div color="dark" class="ion-padding">{{txtdestino}}</div>
        <div color="dark" class="ion-padding">{{locationCD}}</div>
-       <div color="dark" class="ion-padding">{{txtCosto}}{{costoV}}</div>
-      </ion-col>
+       <div color="dark" class="ion-padding">{{txtCosto}}</div>
+       <div color="dark" class="ion-padding">{{costoV}}</div>
+      </ion-card>
    </ion-row>
   </ion-grid>
 </ion-content>

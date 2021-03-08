@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router }from '@angular/router';
 import { Storage } from '@ionic/storage';//Manejo de cache
 import { AlertController } from '@ionic/angular';
-import { ImagePicker } from '@ionic-native/image-picker/ngx';
+//import { ImagePicker } from '@ionic-native/image-picker/ngx';
 
 //Services
 import { FirebaseService } from '../services/Firebase/firebase.service';
@@ -21,7 +21,7 @@ export class ProfilePage implements OnInit {
   imgPA:any='';
   cliente:Number;
   confirmador:any;
-  constructor(private imagePicker: ImagePicker,private alertCtrl:AlertController,private message:MessagesService,private social:SocialMediaService,private fire:FirebaseService,private router:Router,private storage:Storage) { 
+  constructor(/*private imagePicker: ImagePicker,*/private alertCtrl:AlertController,private message:MessagesService,private social:SocialMediaService,private fire:FirebaseService,private router:Router,private storage:Storage) { 
     this.data.nombre = '';
     this.data.appm = '';
     this.data.mail = '';
@@ -135,7 +135,7 @@ export class ProfilePage implements OnInit {
     this.imgP='assets/imgs/profile.jpeg';
   }
   private async change_img(){
-    this.imagePicker.hasReadPermission().then((result) => {
+    /*this.imagePicker.hasReadPermission().then((result) => {
       if(result == false){
         // no callbacks required as this opens a popup which returns async
         this.imagePicker.requestReadPermission();
@@ -152,7 +152,7 @@ export class ProfilePage implements OnInit {
       }
     },(err) => {
       console.log(err);
-    });
+    });*/
   }
   uploadImageToFirebase(image){
     //image = normalizeURL(image);

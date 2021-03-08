@@ -12,16 +12,17 @@ import { SocialMediaService} from '../services/Media/social-media.service';
   styleUrls: ['./request.page.scss'],
 })
 export class RequestPage implements OnInit {
-  locationC:String;
-  locationCD:String;
-  idCliente:Number;
-  cliente:String;
-  costoV:String='40.0 a 50.0 pesos dentro de la ciudad y de 60 o más fuera de la ciudad';
-  mensaje:object;
-  txtorigen:String='Empezar viaje en:';
-  txtdestino:String='Terminar viaje en:';
-  txtCosto:String='Tarifa: $';
-  isLoading = false;
+  private locationC:String;
+  private locationCD:String;
+  private idCliente:Number;
+  private cliente:String;
+  private costoV:String='40.0 a 50.0 pesos dentro de la ciudad y de 60 o más fuera de la ciudad';
+  private mensaje:object;
+  private txtorigen:String='Empezar viaje en:';
+  private txtdestino:String='Terminar viaje en:';
+  private txtCosto:String='Tarifa: $';
+  private isLoading = false;
+  private boolOff=false;
   constructor(private social:SocialMediaService,private router:Router,private message:MessagesService,private menu:MenuController,private loadingCtrl:LoadingController,private storage:Storage) {
     this.menu.enable(false);
   }
@@ -40,7 +41,7 @@ export class RequestPage implements OnInit {
               this.txtCosto='Tarifa: $';
               this.txtorigen='Empezar viaje en:';
               this.txtdestino='Terminar viaje en:';
-              this.costoV='40.0 a 50.0 dentro de la ciudad y de 60 o más fuera de la ciudad';         
+              this.costoV='40.0 a 50.0 pesos dentro de la ciudad y de 60 pesos o más fuera de la ciudad';         
             }
             else{
               this.router.navigate(['/home']);        
@@ -49,6 +50,12 @@ export class RequestPage implements OnInit {
         });   
       });   
     });    
+  }
+  ionViewWillLeave(){
+    if(this.boolOff==false)
+      this.menu.enable(true);
+    else  
+    this.menu.enable(false);
   }
   //metodos
   async loading() {
@@ -78,6 +85,7 @@ export class RequestPage implements OnInit {
   */
   //ionViewCanEnter(){}
   startT(){
+    this.boolOff=true;
     this.router.navigate(['/traveling']);
     //if(this.locationC!=''&&this.locationC!=null){
     /*if(this.locationC!=''&&this.locationC!=null&&this.locationCD!=''&&this.locationCD!=null){

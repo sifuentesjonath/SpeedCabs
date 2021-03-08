@@ -1,6 +1,6 @@
 import { Injectable,OnInit } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference, } from 'angularfire2/firestore';
-import { AngularFireStorage, AngularFireUploadTask} from 'angularfire2/storage';
+//import { AngularFireStorage, AngularFireUploadTask} from 'angularfire2/storage';
 
 import { Observable,Subject,BehaviorSubject } from 'rxjs';
 import { map,take } from 'rxjs/operators';
@@ -30,7 +30,7 @@ export class FirebaseService {
   private check:boolean=false;
   private compare:boolean=false;
   private client:any={};
-  constructor(private storage:Storage,private firestorage:AngularFireStorage,private firestore: AngularFirestore,private auts:AuthenticationService){
+  constructor(private storage:Storage/*,private firestorage:AngularFireStorage*/,private firestore: AngularFirestore,private auts:AuthenticationService){
     this.clientsCollection = this.firestore.collection<Clients>(this.clients_c);
     this.clients = this.clientsCollection.snapshotChanges().pipe(
       map(actions => {
@@ -183,7 +183,7 @@ export class FirebaseService {
   }
   ///Upload Image
   public uploadImage(imageURI){
-    return new Promise<any>((resolve, reject) => {
+    /*return new Promise<any>((resolve, reject) => {
       let storageRef = this.firestorage.storage.ref();
       let imageRef = storageRef.child('image').child('imageName');
       this.encodeImageUri(imageURI, function(image64){
@@ -194,7 +194,7 @@ export class FirebaseService {
           reject(err);
         })
       })
-    })
+    })*/
   }
   encodeImageUri(imageUri, callback) {
     var c = document.createElement('canvas');

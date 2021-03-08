@@ -38,9 +38,12 @@ export class LoginPage implements OnInit {
     let body={correo:this.datos.value.correo,password:this.datos.value.password};
     this.message.loading();
     await this.fire.login(body).then((res)=>{
-      setTimeout(()=>{
-        var compare=this.fire.get_state();
+      var compare=this.fire.get_state();
+        var fin= setInterval(()=>{
+          compare= this.fire.get_state();
+        },300);
         setTimeout(()=>{
+          clearInterval(fin);
           this.message.dismiss_loding();
           if(compare==true){
             this.storage.set('confirmador',JSON.stringify({correo:this.datos.value.correo}));
@@ -50,11 +53,9 @@ export class LoginPage implements OnInit {
           else{
             this.message.error_emailPass();         
           }
-        },500);
-      },500);
+        },1200);
     },err => {
       this.message.dismiss_loding();
-      this.message.error_emailPass();         
     });
     /*this.fire.login(body).then(res=>{
       setTimeout(() => {

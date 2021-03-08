@@ -38,7 +38,9 @@ export class HomePage implements OnInit {
     this.saveDisabled = true;
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
   }
-  async ngOnInit(){
+  ngOnInit(){
+  }
+  async ionViewDidEnter(){
     await this.loadMap(); 
   }
   async loadMap() {
@@ -46,7 +48,6 @@ export class HomePage implements OnInit {
     this.myLantLng=await this.getLocation();
     setTimeout(() => {
       let mapEle:HTMLElement=document.getElementById('map');
-      let connect:HTMLElement=document.getElementById('please-connect');
       this.map=new google.maps.Map((mapEle),{
         center:this.myLantLng,
         zoom:12,
@@ -54,7 +55,6 @@ export class HomePage implements OnInit {
       });
       google.maps.event.addListenerOnce(this.map,'idle',()=>{
         this.addMarker(this.myLantLng);
-        connect.remove();
       });
       this.directionsDisplay.setMap(this.map);
     },500);
@@ -65,6 +65,7 @@ export class HomePage implements OnInit {
     return{lat:rta.coords.latitude,lng:rta.coords.longitude}
   }
   private addMarker(myLantLng){
+    let connect:HTMLElement=document.getElementById('please-connect');
     this.marker=new google.maps.Marker({
         position:{
           lat:myLantLng.lat,
@@ -75,6 +76,8 @@ export class HomePage implements OnInit {
         title:'Mi ubicación'
     });
     this.geocode(this.marker,this.storage);
+    connect.remove();
+
   }
   ///
   private geocode(marker,storage){

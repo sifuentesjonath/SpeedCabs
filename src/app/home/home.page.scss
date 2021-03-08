@@ -33,10 +33,7 @@
     .float-l{
       float: left;
     }
-    .pos-end{
-      margin-top: 1.5%;
-      margin-left: 73%;
-    }
+
     .io-toolbar{
       background-color: black;
     } 
@@ -46,12 +43,20 @@
     .text-color{
       color: white;
     }
+    .pos-end{
+      margin-right:3%;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
     .btn-next{
-      padding-top: 9%;
-      padding-bottom: 9%;
-      padding-right: 9%;
-      padding-left: 9%;
-      border-radius: 10px;
+      padding:10px;
+      border-radius:14px;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size:105%;
+      margin: 4px 2px;
     }
     .align-spinner{
       margin-left: 45%;

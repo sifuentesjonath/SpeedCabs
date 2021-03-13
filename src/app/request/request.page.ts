@@ -23,6 +23,7 @@ export class RequestPage implements OnInit {
   private txtCosto:String='Tarifa: $';
   private isLoading = false;
   private boolOff=false;
+  private img_client:string='';
   constructor(private social:SocialMediaService,private router:Router,private message:MessagesService,private menu:MenuController,private loadingCtrl:LoadingController,private storage:Storage) {
     this.menu.enable(false);
   }
@@ -32,20 +33,23 @@ export class RequestPage implements OnInit {
       this.storage.get('ubicacionC').then((res) => {
         this.storage.get('ubicacionCD').then((res2) => {
           this.storage.get('Id').then((res3) => { 
-            if(resu!=null&&res!=null&&res3!=null){ 
-              this.cliente=resu;
-              this.locationC=res;
-              this.locationCD=res2;
-              this.idCliente=res3;
-              //definir costo
-              this.txtCosto='Tarifa: $';
-              this.txtorigen='Empezar viaje en:';
-              this.txtdestino='Terminar viaje en:';
-              this.costoV='40.0 a 50.0 pesos dentro de la ciudad y de 60 pesos o más fuera de la ciudad';         
-            }
-            else{
-              this.router.navigate(['/home']);        
-            }
+            this.storage.get('ProfileImg').then((img)=>{  
+              if(resu!=null&&res!=null&&res3!=null){ 
+                this.cliente=resu;
+                this.locationC=res;
+                this.locationCD=res2;
+                this.idCliente=res3;
+                this.img_client=img;
+                //definir costo
+                this.txtCosto='Tarifa: $';
+                this.txtorigen='Empezar viaje en:';
+                this.txtdestino='Terminar viaje en:';
+                this.costoV='40.0 a 50.0 pesos dentro de la ciudad y de 60 pesos o más fuera de la ciudad';         
+              }
+              else{
+                this.router.navigate(['/home']);        
+              }
+            });
           });
         });   
       });   
@@ -85,8 +89,13 @@ export class RequestPage implements OnInit {
   */
   //ionViewCanEnter(){}
   startT(){
-    this.boolOff=true;
-    this.router.navigate(['/traveling']);
+    if(this.img_client!=''&&this.img_client!=null){
+      this.boolOff=true;
+      this.router.navigate(['/traveling']);
+    }
+    else{
+      this.message.warning_imgs();
+    }
     //if(this.locationC!=''&&this.locationC!=null){
     /*if(this.locationC!=''&&this.locationC!=null&&this.locationCD!=''&&this.locationCD!=null){
       //let url='http://citcar.relatibyte.mx//mobile/Api/deleteV.php';

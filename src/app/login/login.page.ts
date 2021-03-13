@@ -5,7 +5,6 @@ import {Validators,FormBuilder,FormGroup,FormControl} from '@angular/forms';
 //import { RegistrarsePage } from '../registrarse/registrarse';
 import { Storage } from '@ionic/storage';//Manejo de cache
 //imports services
-import { Aes256Service } from '../services/AES-256/aes-256.service';
 import { MessagesService } from '../services/Messages/messages.service';
 import { FirebaseService } from '../services/Firebase/firebase.service';
 
@@ -22,7 +21,7 @@ export class LoginPage implements OnInit {
   correoO:String;
   cliente:String;
   private datos: FormGroup;
-  constructor(private storage: Storage,private formBuilder: FormBuilder,private fire:FirebaseService,private message:MessagesService,private aes256:Aes256Service,private router:Router,private menu:MenuController) {
+  constructor(private storage: Storage,private formBuilder: FormBuilder,private fire:FirebaseService,private message:MessagesService,private router:Router,private menu:MenuController) {
     this.menu.enable(false);
     this.datos = this.formBuilder.group({
       'correo': new FormControl('', [Validators.required, Validators.email]),

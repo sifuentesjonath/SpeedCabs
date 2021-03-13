@@ -14,14 +14,18 @@ import { Storage } from '@ionic/storage';//Manejo de cache
 export class AppComponent {
   navigate : any;
   cliente:String='';
+  darkMode: boolean=true;
+  darkMod: boolean;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private router:Router,
-    private storage:Storage
+    private storage:Storage,
   ) {
     this.sideMenu();
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    this.darkMode = prefersDark.matches;
     this.initializeApp();
   }
   sideMenu(){
@@ -102,5 +106,31 @@ export class AppComponent {
   }
   hide_splashScreen(){
     this.splashScreen.hide();
+    this.checkDarkTheme();
+    this.mod_color();
   }
+  checkDarkTheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    if(prefersDark.matches){
+      document.body.classList.toggle('dark');
+    }
+  }
+  mod_color(){
+    this.storage.get('dark_mode').then((mod)=>{
+      this.darkMod=mod;
+      if(mod==false){
+        document.body.classList.toggle('dark',mod);
+      }
+      else{
+        document.body.classList.toggle('dark',!mod);
+      }
+    });
+  }
+  changeMod(){
+    this.darkMode = !this.darkMode;
+    this.darkMod=this.darkMode;
+    this.storage.set('dark_mode',this.darkMode);
+    document.body.classList.toggle('dark');
+  }
+
 }

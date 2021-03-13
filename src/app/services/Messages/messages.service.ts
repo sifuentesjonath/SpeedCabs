@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AlertController,LoadingController } from '@ionic/angular';
+import { AlertController,LoadingController,ToastController  } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessagesService {
   private isLoading = false;
-  constructor(private alertCtrl:AlertController,private loadingCtrl:LoadingController) { }
+  constructor(private alertCtrl:AlertController,private loadingCtrl:LoadingController,private toastCtrl:ToastController) { }
 
   async error_emailPass() {
     const alert = await this.alertCtrl.create({
@@ -120,6 +120,16 @@ export class MessagesService {
     });
     await alert.present();
   }
+  async warning_imgs() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Advertencia',
+      //subHeader: 'Error',
+      message:" Actualize primero su imagen de perfil antes de comenzar el viaje",
+      buttons: ['Entendido']
+    });
+    await alert.present();
+  }
   ///
   async successfull_checkIn() {
     const alert = await this.alertCtrl.create({
@@ -185,5 +195,22 @@ export class MessagesService {
   async dismiss_loding() {
     this.isLoading = false;
     await this.loadingCtrl.dismiss();
+  }
+  ///Toast
+  async toast_successfull(){
+    const message = await this.toastCtrl.create({
+      message: 'La imagen se actualizó correctamente',
+      duration: 1000,
+      position:'top',
+    });
+    message.present();
+  }
+  async error_toast(){
+    const message = await this.toastCtrl.create({
+      message: 'Error al intentar subir la imagen',
+      duration: 1000,
+      position:'top',
+    });
+    message.present();
   }
 }

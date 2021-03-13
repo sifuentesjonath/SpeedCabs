@@ -1,6 +1,6 @@
 import { Injectable,OnInit } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference, } from 'angularfire2/firestore';
-//import { AngularFireStorage, AngularFireUploadTask} from 'angularfire2/storage';
+import { AngularFireStorage, AngularFireUploadTask} from 'angularfire2/storage';
 
 import { Observable,Subject,BehaviorSubject } from 'rxjs';
 import { map,take } from 'rxjs/operators';
@@ -30,7 +30,8 @@ export class FirebaseService {
   private check:boolean=false;
   private compare:boolean=false;
   private client:any={};
-  constructor(private storage:Storage/*,private firestorage:AngularFireStorage*/,private firestore: AngularFirestore,private auts:AuthenticationService){
+  private image:string='';
+  constructor(private storage:Storage,private firestorage:AngularFireStorage,private firestore: AngularFirestore,private auts:AuthenticationService){
     this.clientsCollection = this.firestore.collection<Clients>(this.clients_c);
     this.clients = this.clientsCollection.snapshotChanges().pipe(
       map(actions => {
@@ -62,11 +63,12 @@ export class FirebaseService {
     await this.clients.subscribe(result=>{
       result.map(res=>{
         if(res.email==date.correo){
-          this.client={id:res.id,namel:res.name+' '+res.lastname};
+          this.client={id:res.id,namel:res.name+' '+res.lastname,image_c:res.img_client};
           this.auts.loginUser(date).then(()=>{
             this.boolState=true;
             this.storage.set('Id',this.client.id);
             this.storage.set('NombreC',this.client.namel);
+            this.storage.set('ProfileImg',this.client.image_c);
           }).catch(err=>{
             this.boolState=false;
           });
@@ -182,21 +184,33 @@ export class FirebaseService {
     this.auts.updateUser(email);
   }
   ///Upload Image
-  public uploadImage(imageURI){
-    /*return new Promise<any>((resolve, reject) => {
+  public uploadImage(imageURI,id){
+    return new Promise<any>((resolve, reject) => {
       let storageRef = this.firestorage.storage.ref();
-      let imageRef = storageRef.child('image').child('imageName');
+      let imageRef = storageRef.child('Profiles').child(id);
       this.encodeImageUri(imageURI, function(image64){
-        imageRef.putString(image64, 'data_url')
-        .then(snapshot => {
-          resolve(snapshot.downloadURL)
-        }, err => {
+        imageRef.putString(image64, 'data_url').then(snapshot => {
+          imageRef.getDownloadURL().then((url)=>{
+            resolve(url);
+          },(err)=>{reject(err)});
+        },(err)=>{
           reject(err);
         })
       })
-    })*/
+    })
   }
-  encodeImageUri(imageUri, callback) {
+  public async set_img(id,url){
+    return await this.CloudImage(id,url);
+  }
+  private async CloudImage(id:string,imageURL){
+    this.check=false;
+    var data={img_client:imageURL};
+      await this.clientsCollection.doc<Clients>(id).update(data).then(()=>{
+        this.check=true;
+      }).catch(err=>this.check=false);   
+  
+  }
+  private encodeImageUri(imageUri, callback) {
     var c = document.createElement('canvas');
     var ctx = c.getContext("2d");
     var img = new Image();
@@ -210,7 +224,16 @@ export class FirebaseService {
     };
     img.src = imageUri;
   };
-    
+  /*public get_imagePath(){
+    //return this.image;
+    function sequenceSubscriber(observer) {
+      observer.next(this.image);
+      observer.next(this.image);
+      observer.next(this.image);
+      observer.complete();
+      return {unsubscribe() {}}; 
+    } 
+  }*/      
   ///
   //close Client
   public async close(){

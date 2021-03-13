@@ -101,7 +101,7 @@ export class CheckInPage implements OnInit {
     if(this.datos.value.password!=''&&this.datos.value.passwordC!=''){
       this.message_.loading();
       if(this.datos.value.password===this.datos.value.passwordC){
-        var pass=this.aes256.encrypt(this.datos.value.password);
+        //var pass=this.aes256.encrypt(this.datos.value.password);
         let body={name:this.datos.value.nombre,lastname:this.datos.value.apellido,email:this.datos.value.correo,phone:this.datos.value.celular,idRole:'GJyQ584yKSNiSq9DTpkY',img_client:''};
         await this.fire.check_in(body,this.datos.value.password).then((res)=>{
           setTimeout(()=>{
@@ -120,49 +120,5 @@ export class CheckInPage implements OnInit {
         this.message_.error_passConfirm();
       }
     }}
-      /*if(this.datos.value.nombre!=''&&this.datos.value.apellido!=''&&this.datos.value.password!=''&&this.datos.value.passwordC!=''&&this.datos.value.celular!=''){
-      if(this.data.passwordC===this.data.password){
-        var url = 'http://citcar.relatibyte.mx//mobile/Api/CheckRes.php';
-        let pass=this.aes256.encrypt(this.datos.value.password);
-        //var contra=window.btoa(this.data.password);
-        //let password=aes256.init(this.data.password);
-        let body=JSON.stringify({nombre:this.datos.value.nombre,apellido:this.datos.value.apellido,correo:this.datos.value.correo,pass:pass,celular:this.datos.value.celular});
-        this.http.post(url,body).subscribe(res => {
-          if(res===0){
-            this.message_.general_error();
-          }      
-          else if(res===1){
-            this.message_.error_email();
-          }
-          else{ 
-            this.mensaje=res;
-            //console.log(this.mensaje);
-            /*let mess = this.alertCtrl.create({
-              title: 'Perfecto',
-              message:this.mensaje,
-              buttons: ['Entendido']
-            });
-            mess.present();
-            this.message_.successfull_checkIn();
-            //this.pass=res[0].cliente_pass;
-            //this.storage.set('Apodo',this.nick);
-            //this.storage.set('confirmador',this.nick+this.pass);
-            //console.dir(nick+','+pass);
-    
-          }
-        },err => {
-          console.log('Error: ' + err.error);
-          console.log('Name: ' + err.name);
-          console.log('Message: ' + err.message);
-          console.log('Status: ' + err.status);
-        });
-      }
-      else{
-        this.message_.error_passConfirm();
-      }
-    }
-    else{
-      this.message_.warning_fields();
-    }*/  
   }
 }

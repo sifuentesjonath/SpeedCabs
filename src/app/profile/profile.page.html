@@ -11,10 +11,12 @@
   <ion-grid>
     <ion-row id="al-center">
       <!--<ion-item id="image" fill="clear">-->
-        <ion-button fill="clear" id="image_1" (tap)="change_img()" (click)="change_img()">
-          <img id="profilepic padding-bottom" src="{{imgP}}" (error)="defaultImg()" />
-        </ion-button>
-      <!--</ion-item>-->
+      <ion-button fill="clear" id="image_1" (tap)="change_img()" (click)="change_img()">
+        <ion-avatar id="avatar_img">
+          <img src="{{imgP}}" id="image" (error)="defaultImg()" />
+        </ion-avatar>
+      </ion-button>
+      <!--id="profilepic padding-bottom"</ion-item>-->
       <ion-item class="ion-padding" id="btn-img">
           <ion-chip col-12 id="nameC">
             <ion-avatar (click)="changeImg()">
@@ -34,7 +36,7 @@
           <ion-button color="dark" expand="block" (click)="close()">cerrar Sesión</ion-button>
         </div>
       </ion-col>
-    </ion-row>       
+    </ion-row>    
   </ion-grid>
 </ion-content>
 <ion-fab horizontal="end" vertical="bottom" slot="fixed">

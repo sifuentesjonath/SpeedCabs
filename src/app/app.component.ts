@@ -16,6 +16,7 @@ export class AppComponent {
   cliente:String='';
   darkMode: boolean=true;
   darkMod: boolean;
+  mod:any;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -65,7 +66,7 @@ export class AppComponent {
         this.storage.get('Id').then((res) => {
           this.storage.get('NombreC').then((resu) => { 
           this.storage.get('idV').then((resI) => {    
-            if(res!=null){
+            if(res!=null&&resu!=null){
               if(resI!=null){    
               /*this.cliente=resu;
                 let url='http://citcar.relatibyte.mx//mobile/Api/consultV_ACT.php';
@@ -86,7 +87,7 @@ export class AppComponent {
                   },500);
                 },err => {});*/
                 this.router.navigateByUrl('/traveling');
-
+                this.hide_splashScreen(); 
               }
               else{
                 this.router.navigateByUrl('/home');
@@ -101,7 +102,7 @@ export class AppComponent {
           }); 
           });
         });
-      },300);
+      },1000);
     });
   }
   hide_splashScreen(){
@@ -117,12 +118,17 @@ export class AppComponent {
   }
   mod_color(){
     this.storage.get('dark_mode').then((mod)=>{
-      this.darkMod=mod;
       if(mod==false){
+        this.darkMod=mod;
         document.body.classList.toggle('dark',mod);
       }
+      else if(mod==true){
+        this.darkMod=mod;
+        document.body.classList.toggle('dark',!mod); 
+      }
       else{
-        document.body.classList.toggle('dark',!mod);
+        this.darkMod=false;
+        document.body.classList.toggle('dark',false);
       }
     });
   }
@@ -130,7 +136,7 @@ export class AppComponent {
     this.darkMode = !this.darkMode;
     this.darkMod=this.darkMode;
     this.storage.set('dark_mode',this.darkMode);
-    document.body.classList.toggle('dark');
+    document.body.classList.toggle('dark',this.darkMod);
   }
 
 }

@@ -58,23 +58,11 @@ export class FirebaseService {
   private get_compare(){
     return this.compare;
   }
-  public async login(date){
-    this.boolState=false;
-    await this.clients.subscribe(result=>{
-      result.map(res=>{
-        if(res.email==date.correo){
-          this.client={id:res.id,namel:res.name+' '+res.lastname,image_c:res.img_client};
-          this.auts.loginUser(date).then(()=>{
-            this.boolState=true;
-            this.storage.set('Id',this.client.id);
-            this.storage.set('NombreC',this.client.namel);
-            this.storage.set('ProfileImg',this.client.image_c);
-          }).catch(err=>{
-            this.boolState=false;
-          });
-        }
-      })
-    });
+  public async login(){
+    return await this.clients;
+  }
+  public async loginUser(body){
+    return await this.auts.loginUser(body);  
   }
   public async check_in(date,pass){
     this.check=false;  

@@ -29,21 +29,21 @@ export class ProfilePage implements OnInit {
     this.data.password = '';
   }
   ngOnInit() {
-    this.message.loading();
     this.storage.get('NombreC').then((res) => {
       if(res!=null){
         this.NombreC=res;
-        this.storage.get('Id').then((res0) => {
+        this.storage.get('Id').then((res0)=>{
           this.storage.get('ProfileImg').then((img)=>{
+            this.message.loading();
             this.storage.get('confirmador').then((res_) => {
+              this.imgP=img;
               if(res!=null){
                 this.idClient=res0;
                 if(res_!=null){
-                  this.imgP=img;
                   this.confirmador=JSON.parse(res_);
-                  this.message.dismiss_loding();
                 }
               }
+            this.message.dismiss_loding();
             });
           });
         });  

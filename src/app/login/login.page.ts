@@ -19,7 +19,7 @@ export class LoginPage implements OnInit {
   app:String;
   pass:any = {};
   correoO:String;
-  cliente:String;
+  private client:any={};
   private datos: FormGroup;
   constructor(private storage: Storage,private formBuilder: FormBuilder,private fire:FirebaseService,private message:MessagesService,private router:Router,private menu:MenuController) {
     this.menu.enable(false);
@@ -34,70 +34,33 @@ export class LoginPage implements OnInit {
   ionViewCanEnter(){}
 
   private async enter_home(){
-    let body={correo:this.datos.value.correo,password:this.datos.value.password};
+    var body={correo:this.datos.value.correo,password:this.datos.value.password};
     this.message.loading();
-    await this.fire.login(body).then((res)=>{
-      var compare=this.fire.get_state();
-        var fin= setInterval(()=>{
-          compare= this.fire.get_state();
-        },300);
-        setTimeout(()=>{
-          clearInterval(fin);
+    await this.fire.login().then((res)=>{
+      res.subscribe(result=>{
+        result.map(res=>{
+          if(res.email==body.correo){
+            this.client={id:res.id,namel:res.name+' '+res.lastname,image_c:res.img_client};
+            this.fire.loginUser(body).then(()=>{
+              this.storage.set('confirmador',JSON.stringify({correo:this.datos.value.correo}));            
+              this.storage.set('Id',this.client.id);
+              this.storage.set('NombreC',this.client.namel);
+              this.storage.set('ProfileImg',this.client.image_c);
+              this.message.dismiss_loding();
+              this.menu.enable(true);
+              this.router.navigate(['/home']);
+            },err=>{
+              this.message.dismiss_loding();
+              this.message.error_emailPass();         
+            });
+          }
+        },err => {
           this.message.dismiss_loding();
-          if(compare==true){
-            this.storage.set('confirmador',JSON.stringify({correo:this.datos.value.correo}));
-            this.menu.enable(true);
-            this.router.navigate(['/home']);
-          }
-          else{
-            this.message.error_emailPass();         
-          }
-        },1200);
+        });
+      });
     },err => {
       this.message.dismiss_loding();
     });
-    /*this.fire.login(body).then(res=>{
-      setTimeout(() => {
-        this.dismiss_loding();
-      },1000);
-    },err=>{});*/
-    //this.provedor.submit(this.data.nickname,this.data.password);
-    /*var url ='http://citcar.relatibyte.mx/mobile/Api/connectApi.php';
-    let pass=this.aes256.encrypt(this.data.password);
-    let body=JSON.stringify({correo:this.data.correo,password:pass});
-    this.loading();
-    this.http.post(url,body).subscribe(res => {
-      setTimeout(() => {
-        if(res===0){
-          /*let error = this.alertCtrl.create({
-            header: 'Error',
-            message:"Usuario o contraseña incorrecta,por favor intentelo de nuevo",
-            buttons: ['Entendido']
-          });
-          error.present();
-          this.alert_error();
-          this.dismiss_loding();
-        }
-        else{ 
-          this.Id=res[0].idCliente;
-          this.nombre=res[0].cliente_nombre;
-          this.app=res[0].cliente_apellido;
-          this.pass=res[0].cliente_pass;
-          this.correoO=res[0].cliente_correo;
-          this.storage.set('Id',this.Id);
-          this.storage.set('NombreC',this.nombre+' '+this.app);
-          this.storage.set('confirmador',this.correoO);
-          this.dismiss_loding();
-          let currentIndex = this.navCtrl.getActive().index;
-          
-          this.navCtrl.push(HomePage).then(() => {
-              this.navCtrl.remove(currentIndex);
-          });
-
-        }
-      },1000);
-    },err => {});*/
-    //this.router.navigate(['/home']);
   }
   private passwordR(){
     this.router.navigate(['/res-password']);

@@ -103,16 +103,18 @@ export class CheckInPage implements OnInit {
       if(this.datos.value.password===this.datos.value.passwordC){
         //var pass=this.aes256.encrypt(this.datos.value.password);
         let body={name:this.datos.value.nombre,lastname:this.datos.value.apellido,email:this.datos.value.correo,phone:this.datos.value.celular,idRole:'GJyQ584yKSNiSq9DTpkY',img_client:''};
-        await this.fire.check_in(body,this.datos.value.password).then((res)=>{
-          setTimeout(()=>{
-            this.message_.dismiss_loding();  
-            if(this.fire.get_check()==true){
+        await this.fire.comparemail_phone(body).then(async(res)=>{
+          if(res==true){   
+            await this.fire.check_in(body,this.datos.value.password).then((res)=>{
               this.message_.successfull_checkIn();
-            }
-            else{
+            }).catch((err)=>{
               this.message_.error_email();
-            }
-          },1000);
+            });
+          }
+          else{
+            this.message_.error_email();
+          }
+          this.message_.dismiss_loding();
         });
       }
       else{

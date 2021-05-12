@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppVersion } from '@ionic-native/app-version/ngx';
+import { Storage } from '@ionic/storage';//Manejo de cache
 
 @Component({
   selector: 'app-app-info',
@@ -9,7 +10,8 @@ import { AppVersion } from '@ionic-native/app-version/ngx';
 export class AppInfoPage implements OnInit {
   version:string='';
   app:string='';
-  constructor(private appVersion:AppVersion) { }
+  private imgL:string='';
+  constructor(private appVersion:AppVersion,private storage:Storage) { }
 
   ngOnInit() {
   }
@@ -18,13 +20,27 @@ export class AppInfoPage implements OnInit {
     @this.app{String}
     @this.version{String}
   */
- ionViewCanEnter(){
-  //this.appVersion.getVersionCode();
-  this.appVersion.getVersionNumber().then((v)=> {
-    this.appVersion.getAppName().then((appN)=>{
-      this.app=appN;
-      this.version=v;
+  async ionViewDidEnter(){
+    this.verify_theme();
+    this.appVersion.getVersionNumber().then((v)=> {
+      this.appVersion.getAppName().then((appN)=>{
+        this.app=appN;
+        this.version=v;
+      });
     });
-  });
-}
+  }
+  verify_theme(){
+    this.storage.get('dark_mode').then((mod)=>{
+      if(mod==false){
+        this.imgL='assets/imgs/logo.png';
+      }
+      else if(mod==true){
+        this.imgL='assets/imgs/logob.png';
+ 
+      }
+      else{
+        this.imgL='assets/imgs/logo.png';
+      }
+    });
+  }
 }

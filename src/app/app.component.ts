@@ -5,6 +5,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Router }from '@angular/router';
 import { Storage } from '@ionic/storage';//Manejo de cache
+import { FirebaseService } from './services/Firebase/firebase.service';
+
 
 @Component({
   selector: 'app-root',
@@ -23,6 +25,7 @@ export class AppComponent {
     private statusBar: StatusBar,
     private router:Router,
     private storage:Storage,
+    private fire:FirebaseService,
   ) {
     this.sideMenu();
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -67,27 +70,20 @@ export class AppComponent {
           this.storage.get('NombreC').then((resu) => { 
           this.storage.get('idV').then((resI) => {    
             if(res!=null&&resu!=null){
-              if(resI!=null){    
-              /*this.cliente=resu;
-                let url='http://citcar.relatibyte.mx//mobile/Api/consultV_ACT.php';
-                let body=JSON.stringify({idV:resI,cliente:this.cliente});
-                this.http.post(url,body).subscribe(res => {  
-                  setTimeout(() => {
-                    if(res===0){
-                      //this.rootPage=TravelingPage;
-                      this.rootPage=TravelingPage;
-                      this.splashScreen.hide();
-                    }      
-                    if(res===1){
-                      //this.rootPage=HomePage;
-                      //this.rootPage=TravelingPage;
-                      this.rootPage=HomePage;
-                      this.splashScreen.hide();                
-                    } 
-                  },500);
-                },err => {});*/
-                this.router.navigateByUrl('/traveling');
-                this.hide_splashScreen(); 
+              if(resI!=null){   
+                this.cliente=resu;
+                var body=JSON.stringify({idV:resI,cliente:this.cliente});
+                this.fire.get_travel(resI).subscribe((answer)=>{
+                  if(answer.idEmployee!=''&&answer.state=='Aceptado'||answer.state=='En proceso'){
+                    this.router.navigateByUrl('/traveling');
+                    this.hide_splashScreen(); 
+                  }
+                  else{
+                    this.storage.set('idV',null);
+                    this.router.navigateByUrl('/home');
+                    this.hide_splashScreen(); 
+                  }
+                });
               }
               else{
                 this.router.navigateByUrl('/home');

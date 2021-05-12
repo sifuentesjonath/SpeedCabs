@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController} from '@ionic/angular';
 import { Storage } from '@ionic/storage';//Manejo de cache
+
 //import Services
 import { SocialMediaService} from '../services/Media/social-media.service';
+import { FirebaseService } from '../services/Firebase/firebase.service';
+import { MessagesService } from '../services/Messages/messages.service';
+
 @Component({
   selector: 'app-travels',
   templateUrl: './travels.page.html',
@@ -10,63 +14,44 @@ import { SocialMediaService} from '../services/Media/social-media.service';
 })
 export class TravelsPage implements OnInit {
   viajes:Object=[{}];
-  pausa:boolean=false;
-  isLoading:Boolean=false;
-  simbolo:String='';
-  constructor(private social:SocialMediaService,private storage: Storage,private loadingCtrl:LoadingController) { 
+  simbolo:string='';
+  txtDate:string='';
+  private idV:string='';
+  private travels=new Array();
+  constructor(private fire:FirebaseService,private message:MessagesService,private social:SocialMediaService,private storage: Storage,private loadingCtrl:LoadingController) { 
   }
-  async loading() {
-    this.isLoading = true;
-    return await this.loadingCtrl.create({
-      // duration: 5000,
-      message:'Cargando'
-    }).then(a => {
-      a.present().then(() => {
-        //console.log('presented');
-        if (!this.isLoading) {
-          a.dismiss().then(() => console.log('abort presenting'));
-        }
-      });
-    });
+  private dismiss(){
+    this.message.dismiss_loding();
   }
-  async dismiss_loding() {
-    this.isLoading = false;
-    return await this.loadingCtrl.dismiss().then(() => console.log('dismissed'));
+  private loading(){
+    this.message.loading();
   }
-  ionViewCanEnter(){
-    /*this.storage.get('NombreC').then((res) => {
-      if(res!=null){
-        let url='http://citcar.relatibyte.mx//mobile/Api/consultV_did.php';
-        let body=JSON.stringify({cliente:res});
+  async ionViewDidEnter(){
+    this.storage.get('Id').then(async(id)=>{
+      this.travels=[];
+      if(id!=null){
+        this.idV=id;
         this.loading();
-        this.http.post(url,body).subscribe(res => {
-          setTimeout(() => {
-            if(res===0){
-              let error = this.alertCtrl.create({
-                title: 'Error',
-                message:"No Hay viajes que mostrar",
-                buttons: ['Entendido']
-              });
-              error.present();
-            }
-            else{
-              this.viajes=res; 
+        var sus_t=await this.fire.get_travels().subscribe((res)=>{
+          res.map((answer)=>{
+            if(answer.idClient==this.idV&&answer.idEmployee!=''){
               this.simbolo='$';
+              this.txtDate='Fecha:';
+              this.travels.push(answer);   
             }
-          },1000);  
-          setTimeout(() => {
-            this.dismiss_loding();
-          },1000);
-        },err => {});
+          },err=>this.dismiss());
+          this.dismiss();
+          sus_t.unsubscribe();
+        },err=>this.dismiss());
+      } 
+      else{
+        this.message.error_travels();
       }
-    });*/
+    });
   }
   ionViewDidLoad() {
   }
   /*Pausa el loging*/
-  ionViewDidEnter(){
-    this.pausa=true;
-  }
   ngOnInit() {
   }
   whatsapp(){                                            

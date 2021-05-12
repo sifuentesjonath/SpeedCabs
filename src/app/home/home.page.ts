@@ -38,11 +38,20 @@ export class HomePage implements OnInit {
     this.saveDisabled = true;
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
   }
-  ngOnInit(){
+  async ngOnInit(){
+    this.storage.get('ubicacionC').then((origen) => {
+      this.storage.get('ubicacionCD').then(async(destino) => { 
+          if(origen!=null&&destino!=null){
+            await this.storage.set('ubicacionC',null);
+            await this.storage.set('ubicacionCD',null); 
+          }
+          await this.loadMap(); 
+      });
+    });
   }
   async ionViewDidEnter(){
-    await this.loadMap(); 
   }
+
   async loadMap() {
     //FIRST GET THE LOCATION FROM THE DEVICE.
     this.myLantLng=await this.getLocation();
@@ -88,7 +97,7 @@ export class HomePage implements OnInit {
       geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             this.direccion=results[0]['formatted_address'];
-            let content="<h6>Información:</h6>"+this.direccion;
+            let content='<h6 style="color:black;">Información:</h6>'+'<ion-text style="color:black;">'+this.direccion+'</ion-text>';
             infoWindow=new google.maps.InfoWindow({content:content}); 
             infoWindow.open(this.direccion,marker);
             storage.set('ubicacionC',this.direccion);   
@@ -100,7 +109,7 @@ export class HomePage implements OnInit {
         geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
           if (status == google.maps.GeocoderStatus.OK) {
               this.direccion=results[0]['formatted_address'];
-              let content="<h6>Información:</h6>"+this.direccion;
+              let content='<h6 style="color:black;">Información:</h6>'+'<ion-text style="color:black;">'+this.direccion+'</ion-text>';
               infoWindow=new google.maps.InfoWindow({content:content}); 
               infoWindow.open(this.direccion,marker);
               storage.set('ubicacionC',this.direccion);   
@@ -209,8 +218,22 @@ export class HomePage implements OnInit {
   private whatsapp(){                                            
     this.social.whatsapp();
   }
- private  save(){
+ private  async save(){
     //this.router.navigate(['/traveling']);
+    //this.geocode(this.marker,this.storage);
+    this.marker.setMap(null);
+    this.calculateAndDisplayRoute_();
     this.router.navigate(['/request']);
+  }
+  private async calculateAndDisplayRoute_() {
+    this.directionsService.route({
+      origin: this.myLantLng,
+      destination: this.myLantLng,
+      travelMode: 'DRIVING'
+    }, (response, status) => {
+      if (status === 'OK') {
+        this.directionsDisplay.setDirections(response);
+      }
+    });
   }
 }

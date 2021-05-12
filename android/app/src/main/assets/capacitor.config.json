@@ -1,0 +1,24 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "Speed_Cabs",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {
+    "preferences": {
+      "ScrollEnabled": "false",
+      "BackupWebStorage": "none",
+      "SplashMaintainAspectRatio": "true",
+      "FadeSplashScreenDuration": "300",
+      "SplashShowOnlyFirstTime": "false",
+      "SplashScreen": "screen",
+      "GOOGLE_MAPS_ANDROID_API_KEY": "AIzaSyCPDfm3EPvJfWgHvQMBqH5DEFYOlhGP-XE",
+      "GOOGLE_MAPS_IOS_API_KEY": "AIzaSyCPDfm3EPvJfWgHvQMBqH5DEFYOlhGP-XE"
+    }
+  }
+}

@@ -109,6 +109,16 @@ export class MessagesService {
     });
     await alert.present();
   }
+  async error_travels() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Hola',
+      //subHeader: 'Error',
+      message:"No tienes viajes que mostrar",
+      buttons: ['Entendido']
+    });
+    await alert.present();
+  }
   ///
   async warning_fields() {
     const alert = await this.alertCtrl.create({

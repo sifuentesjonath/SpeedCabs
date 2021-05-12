@@ -1,14 +1,17 @@
 import { Component, OnInit,AfterViewInit, OnChanges, EventEmitter,Input, ElementRef, Renderer2, Output, SimpleChanges,NgZone } from '@angular/core';
-import { Platform,LoadingController, MenuController,DomController } from '@ionic/angular';
+import { Platform,AlertController,MenuController,DomController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';//Manejo de cache
 import { Router }from '@angular/router';
 import { DrawerState } from '../services/Drawer/drawer-state';
 import { Geolocation} from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
+import { Subscription,Observable } from 'rxjs';
+
 //imports services
 import * as Hammer from 'hammerjs';
 import { SocialMediaService} from '../services/Media/social-media.service';
 import { MessagesService } from '../services/Messages/messages.service';
+import { FirebaseService } from '../services/Firebase/firebase.service';
 
 declare var google:any;
 @Component({
@@ -27,19 +30,21 @@ export class TravelingPage implements OnInit {
   saveDisabled: boolean;
   location: any;
   direccion:any;
-  cliente:String;
-  idConductor=String;
-  idV:String;
-  imgP:String='';
-  conductor:String='';
-  modelo:String='';
-  placas:String='';
-  costo:String='';
-  destino:String='';
-  origen:String='';
-  celular:String='';
-  txtCosto:String='';
-  mensajeT:String='En Espera...';
+  cliente:string;
+  idConductor:string;
+  idV:string='';
+  imgP:string='';
+  conductor:string='';
+  modelo:string='';
+  placas:string='';
+  costo:string='';
+  destino:string='';
+  origen:string='';
+  txts={txtCosto:'',txtC:'',txtO:'',txtD:'',txtM:'',txtP:''};
+  messageT:String='En Espera...';
+  private employee={idEmployee:'',name_employee:'',phone_employee:'',model:'',plates:'',img_employee:'',state:''};
+  private subscriptions_ = new Subscription();
+
   //
   dockedHeight = 50;
   shouldBounce = true;
@@ -58,43 +63,96 @@ export class TravelingPage implements OnInit {
   private directionsService = new google.maps.DirectionsService;
   private directionsDisplay = new google.maps.DirectionsRenderer;
   private marker:any;
-  constructor(private message:MessagesService,private geolocation:Geolocation,private zone: NgZone,private social:SocialMediaService,private _element: ElementRef,private _renderer: Renderer2,private _domCtrl: DomController,private _platform: Platform,private router:Router,private storage:Storage,private menu:MenuController) {
+  private lantLngO:any;
+  private lantLngD:any;
+  //private lantLng={origin:{lat:'',long:''},destiny:{lat:'',long:''}};
+  constructor(private fire:FirebaseService,private message:MessagesService,private alertCtrl:AlertController,private geolocation:Geolocation,private zone: NgZone,private social:SocialMediaService,private _element: ElementRef,private _renderer: Renderer2,private _domCtrl: DomController,private _platform: Platform,private router:Router,private storage:Storage,private menu:MenuController) {
     this.menu.enable(false);
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
   }
   async ngOnInit() {
     this.imgP='assets/imgs/perfil.png';
     await this.loadMap();
+    this.storage.get('ubicacionC').then((origen) => {
+      this.storage.get('ubicacionCD').then((destino) => { 
+        this.storage.get('Employee').then((res_employee) => { 
+          this.storage.get('idV').then((res_id) => {   
+            if(origen!=null&&destino!=null){
+              this.employee=JSON.parse(res_employee); 
+              if(res_id!=null){
+                  this.idV=res_id;
+                  this.txts.txtM='Modelo: ';
+                  this.txts.txtP='Placas: ';
+                  this.txts.txtO='Recoger en:';
+                  this.origen=origen;
+                  this.txts.txtD='Llevar a:';
+                  this.destino=destino;
+                  this.imgP=this.employee.img_employee;
+                  this.txts.txtC='Conductor: ';
+                  this.conductor=this.employee.name_employee;
+                  this.txts.txtCosto='Costo: ';
+                  this.costo='40.0 a 50.0 pesos dentro de la ciudad y de 60 pesos o más fuera de la ciudad';           
+                  this.mapMaker(this.origen,this.destino);
+                  this.consult_travel();
+              }
+              else{
+                this.router.navigate(['/home']);
+              }
+            }
+          });
+        });
+      });
+    });
   }
   //ngOnDestroy(){}
   ngAfterViewInit() {
-    /*const hammer = new Hammer(this._element.nativeElement);
-    hammer.on('pan panstart panend', (ev: any) => {
-    this._handlePanEnd(ev);
-    });*/
-    /*this._renderer.setStyle(this._element.nativeElement.querySelector('.ion-bottom-drawer-scrollable-content :first-child'),
-      'touch-action', 'none');
-    this._setDrawerState(this.state);*/
-
-    /*const hammer = new Hammer(this._element.nativeElement);
-    hammer.get('pan').set({ enable: true, direction: Hammer.DIRECTION_VERTICAL });
-    hammer.on('pan panstart panend', (ev: any) => {
-      if (this.disableDrag) {
-        return;
-      }
-
-      switch (ev.type) {
-        case 'panstart':
-          this._handlePanStart();
-          break;
-        case 'panend':
-          this._handlePanEnd(ev);
-          break;
-        default:
-          this._handlePan(ev);
-      }
-    });*/
   }
+  private set subs(subscription: Subscription) {
+    this.subscriptions_.add(subscription);
+  }
+  private dismiss(){
+    this.message.dismiss_loding();
+  }
+  private loading(){
+    this.message.loading();
+  }
+  private async consult_travel(){
+    this.subs=get_t;
+    var get_t=this.fire.get_travel(this.idV).subscribe((answer)=>{
+      if(answer.idEmployee!=''&&answer.state!=''){
+        this.messageT=answer.state;
+        if(answer.state=='Cancelado'){
+          this.storage.set('Travel',null);
+          this.storage.set('idV',null);    
+          this.subscriptions_.unsubscribe();
+          this.router.navigate(['/home']);
+        }
+      }
+    });
+  }
+  mapMaker(origen,destino){
+    const that=this;
+    var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({'address':origen}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var lat_o = results[0].geometry.location.lat();
+          var long_o= results[0].geometry.location.lng();
+          geocoder.geocode({'address':destino}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              var lat_d= results[0].geometry.location.lat();
+              var long_d= results[0].geometry.location.lng();
+              that.lantLngO=new google.maps.LatLng(lat_o,long_o);
+              that.lantLngD=new google.maps.LatLng(lat_d,long_d);
+              that.calculateAndDisplayRoute(that.lantLngD); 
+            } 
+            else {
+            }
+          });
+        } 
+        else {
+        }
+      });
+  } 
   async loadMap() {
     this.myLantLng=await this.getLocation();
     setTimeout(() => {
@@ -121,7 +179,7 @@ export class TravelingPage implements OnInit {
   private calculateAndDisplayRoute(formValues) {
     const that = this;
     this.directionsService.route({
-      origin: that.myLantLng,
+      origin: that.lantLngO,
       destination: formValues,
       travelMode: 'DRIVING'
     },(response,status) => {
@@ -133,15 +191,36 @@ export class TravelingPage implements OnInit {
       }
     });
   }
-  private addMarker(myLantLng){
+  private selectPlace(place):string{
+    this.placeid = place.place_id;
+    this.places = [];
+    let location = {
+        lat: null,
+        lng: null,
+        name: place.name
+    };
+    this.marker.setMap(null);
+    this.placesService = new google.maps.places.PlacesService(this.map);
+    this.placesService.getDetails(/*{placeId: place.place_id},*/ (details) => {
+      this.zone.run(() => {
+        location.name = details.name;
+        location.lat = details.geometry.location.lat();
+        location.lng = details.geometry.location.lng();
+        const latLng = new google.maps.LatLng(location.lat, location.lng);
+        return latLng; 
+      });
+    });
+    return '';
+  }
+  private addMarker(lat_o,lng_o){
     this.marker=new google.maps.Marker({
         position:{
-          lat:myLantLng.lat,
-          lng:myLantLng.lng
+          lat:lat_o,
+          lng:lng_o
         },
         zoom:12,
         map:this.map,
-        title:'Mi ubicación'
+        title:'Recoger cliente'
     });
     this.geocode(this.marker,this.storage);
   }
@@ -174,7 +253,7 @@ export class TravelingPage implements OnInit {
         });   
       });
     //});
-  }
+  } 
   private minimize(){
   }
   private ngOnChanges(changes: SimpleChanges) {
@@ -269,68 +348,42 @@ export class TravelingPage implements OnInit {
     });
   }
   private whatsapp(){                                            
-    this.social.whatsapp_user(this.celular);
+    this.social.whatsapp_user(this.employee.phone_employee);
   }
-  private cancel(){
-    //if(this.cliente!=null && this.conductor!=null&&this.idV!=null){
-      this.message.loading_proccess();
-      setTimeout(() => {
-        this.message.dismiss_loding();
-        this.router.navigate(['/home']);
-        //remove();
-      },1000);
-    //}
-
-    /*if(this.cliente!=null && this.conductor!=null&&this.idV!=null){
-      this.storage.get('Id').then((resI) => { 
-      this.storage.get('confirmador').then((res0) => {
-        let loading = this.loadingCtrl.create({
-          content: 'Procesando...'
-        });
-        loading.present(); 
-        var url = 'http://citcar.relatibyte.mx//mobile/Api/connectCitCar/cancel_travel.php';
-        let body=JSON.stringify({id:this.idV,conductor:this.conductor,cliente:this.cliente});
-        this.http.post(url,body).subscribe(res => {
-          setTimeout(() => {
-            if(res===0){
-              let error = this.alertCtrl.create({
-              title: 'Error',
-              message:"Falló al intentar de cancelar viaje,vuelva a intentarlo otra vez.",
-              buttons: ['Entendido']
-              });
-              error.present();               
-              loading.dismiss();
-            }      
-            else if(res===1){
-              this.storage.clear();
-              this.storage.set('NombreC',this.cliente);
-              this.storage.set('confirmador',resI);
-              this.storage.set('Id',res0);
-              const exito = this.toastCtrl.create({
-                    message:'Viaje cancelado',
-                    duration: 1000,
-                    position:'middle'
-              });
-              exito.present();
-              loading.dismiss();
-              let currentIndex = this.navCtrl.getActive().index;
-              this.navCtrl.push(HomePage).then(() => {
-                  this.navCtrl.remove(currentIndex);
-              });                                     
-            }
-            else{
-              var exito = this.alertCtrl.create({
-                title: 'Error',
-                message:"Acceso denegado.",
-                buttons: ['Entendido']
-                });
-                exito.present();
-                loading.dismiss();
-            }
-          },3000);
-        });
-      });
-      });
-    }*/ 
+  private async change_state(){
+    var get_t=await this.fire.get_travel(this.idV).subscribe(async(res)=>{
+      if(res.state=='Aceptado'||res.state=='En proceso'){
+        await (await this.fire.update_travel(this.idV)).subscribe((res_update)=>{
+          if(res_update==true){
+            this.storage.set('Travel',null);
+            this.storage.set('idV',null);    
+            this.subscriptions_.unsubscribe();
+            this.router.navigate(['/home']);
+          }
+          this.dismiss(); 
+        },err=>this.dismiss());
+      }
+    },err=>this.dismiss()); 
+  }
+  private async cancel(){
+    const alert = await this.alertCtrl.create({
+      header: '',
+      message: '<strong>¿Desea cancelar el viaje?</strong>',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+          }
+        }, {
+          text: 'Si',
+          handler: () => {
+            this.loading();
+            this.change_state();
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

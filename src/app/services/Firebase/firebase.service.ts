@@ -8,6 +8,8 @@ import { Storage } from '@ionic/storage';//Manejo de cache
 //SERVICES
 import { AuthenticationService}from '../Authentication/authentication.service';
 import { Client } from 'src/app/userData/user-interface';
+import { Travels } from 'src/app/userData/user-interface';
+
 export interface Clients{
   id?: string,
   idRole:string,
@@ -25,6 +27,9 @@ export class FirebaseService {
   private clients: Observable<Clients[]>;
   private clientsCollection: AngularFirestoreCollection<Clients>;
   private clients_c:string="/CLIENTS";
+  private travels_c:string="/TRAVELS";
+  private travels: Observable<Travels[]>;
+  private travelsCollection: AngularFirestoreCollection<Travels>;
   private data:any;
   private boolState:boolean=false;
   private check:boolean=false;
@@ -33,6 +38,16 @@ export class FirebaseService {
   private image:string='';
   constructor(private storage:Storage,private firestorage:AngularFireStorage,private firestore: AngularFirestore,private auts:AuthenticationService){
     this.clientsCollection = this.firestore.collection<Clients>(this.clients_c);
+    this.travelsCollection=this.firestore.collection<Travels>(this.travels_c);
+    this.travels = this.travelsCollection.snapshotChanges().pipe(
+      map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data();
+          const id = a.payload.doc['id'];
+          return { id, ...data };
+        });
+      })
+    );
     this.clients = this.clientsCollection.snapshotChanges().pipe(
       map(actions => {
         return actions.map(a => {
@@ -86,22 +101,24 @@ export class FirebaseService {
       },300);  
     });
   }
-  private async comparemail_phone(date){
+  public async comparemail_phone(date){
     this.compare=false;
-    await this.clients.subscribe(result=>{
-      result.map(res=>{
-        if(res.email!=date.email&&res.phone!=date.phone){   
-          this.compare=true;
-        }
-        else{
-          this.compare=false;
-          return;
-        }
-      })
-    },err=>{
-      this.compare=false;
-    });
-  }
+    return new Promise<any>(async(resolve,reject) => {
+      await this.client.subscribe(result=>{
+        result.map(res=>{
+          if(res.email!=date.email&&res.phone!=date.phone){   
+            this.compare=true;
+          }
+          else{
+            this.compare=false;
+          }
+        })
+        resolve(this.compare);
+      },err=>{
+        reject(this.compare);
+      });
+    });     
+  }  
   private async compare_profile(data,date){
     this.compare=false;
     if(data.email==date.email){
@@ -193,9 +210,9 @@ export class FirebaseService {
   private async CloudImage(id:string,imageURL){
     this.check=false;
     var data={img_client:imageURL};
-      await this.clientsCollection.doc<Clients>(id).update(data).then(()=>{
-        this.check=true;
-      }).catch(err=>this.check=false);   
+    await this.clientsCollection.doc<Clients>(id).update(data).then(()=>{
+      this.check=true;
+    }).catch(err=>this.check=false);   
   
   }
   private encodeImageUri(imageUri, callback) {
@@ -227,6 +244,25 @@ export class FirebaseService {
   public async close(){
     await this.auts.logoutUser();
   }
+  //TRAVELS
+  public async add_travel(date:Travels){
+    return await this.travelsCollection.add(date);
+  }
+  public get_travel(id:string){
+    return this.travelsCollection.doc<Travels>(id).valueChanges();
+  }
+  public get_travels(){
+    return this.travels;
+  }
+  public async update_travel(id:string) {
+    return new Observable<Boolean>((observer) => {
+      this.travelsCollection.doc<Travels>(id).update({state:'Cancelado'}).then(()=>{
+        observer.next(true);
+        observer.complete();
+      },err=>{
+      });
+    });
+  }  
   /*filterBy(categoriaToFilter: string){
     this.avisos = this.firestore.collection('/', ref => ref.where('categoria','==', categoriaToFilter )).valueChanges()
     return this.avisos;

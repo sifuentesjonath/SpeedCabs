@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="dark">
-    <ion-title>{{mensajeT}}</ion-title>
+    <ion-title>{{messageT}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (tap)="cancel()" (click)="cancel()">Cancelar</ion-button>
     </ion-buttons>
@@ -20,24 +20,47 @@
     <ion-button class="btn-icon" expand="block" fill="clear" color="dark" (tap)="minimize()" (click)="minimize()">
       <ion-icon class="drawer-icon" name="remove-outline" ></ion-icon>
     </ion-button>
-    <ion-content>
-      <ion-list>
+    <ion-content class="scroll-on">
       <ion-grid>
-        <ion-row class="align-center">
-          <div id="image" fill="clear">
-            <img class="profilepic padding-bottom" src="{{imgP}}" (error)="defaultImg()"/>
-          </div>
-          <ion-col class="txtC">
-            <div>{{txtC}}<p id="txtB">{{conductor}}</p></div> 
-            <div><p>{{modelo}}</p></div>
-            <div><p>{{placas}}</p></div>
-            <div>{{txtCosto}}<p id="txtB">{{costo}}</p></div>
-            <div>{{txtO}}<p id="txtB">{{origen}}</p></div>
-            <div>{{txtD}}<p id="txtB">{{destino}}</p></div>
-          </ion-col>
-        </ion-row>
+        <ion-card>
+          <ion-list>
+            <ion-row class="align-center">
+              <ion-button fill="clear" id="image_1">
+                <ion-avatar id="avatar_img">
+                  <img src="{{imgP}}" id="image" (error)="defaultImg()" />
+                </ion-avatar>
+              </ion-button>          
+              <ion-col class="txtC">
+                <div class="txt-space_1">
+                  <div><ion-text color="dark">{{txts.txtC}}</ion-text></div>
+                  <div><ion-text color="dark">{{conductor}}</ion-text></div>
+                </div>
+                <div class="txt-space">
+                  <div><ion-text color="dark">{{txts.txtM}}</ion-text></div>
+                  <div><ion-text color="dark">{{employee.model}}</ion-text></div>
+                </div>
+                <div class="txt-space">
+                  <div><ion-text color="dark">{{txts.txtP}}</ion-text></div>
+                  <div><ion-text color="dark">{{employee.plates}}</ion-text></div>
+                </div>
+                <div class="txt-space">
+                  <div><ion-text color="dark">{{txts.txtO}}</ion-text></div>
+                  <div><ion-text color="dark">{{origen}}</ion-text></div>
+                </div>
+                <div class="txt-space">
+                  <div><ion-text color="dark">{{txts.txtD}}</ion-text></div>
+                  <div><ion-text color="dark">{{destino}}</ion-text></div>
+                </div>
+                <div class="txt-space">
+                  <div><ion-text color="dark">{{txts.txtCosto}}</ion-text></div>
+                  <div><ion-text color="dark">{{costo}}</ion-text></div>
+                </div>
+                <div class="ion-padding"></div>
+              </ion-col>
+            </ion-row>
+          </ion-list>
+        </ion-card> 
       </ion-grid>
-      </ion-list>
     </ion-content>
 </ion-bottom-drawer>
 <ion-fab horizontal="end" vertical="bottom" slot="fixed">

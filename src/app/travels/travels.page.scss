@@ -1,9 +1,17 @@
 .ion-lblP{
     margin-left: 7%;
+    box-shadow: none !important;
 }
 .ion-icon{
     margin-left: -5%;
     height:16vw; 
     width: 16vw; 
     display: inline-block;
+}
+.txt-center{
+    text-align: center;
+}
+.txt-justify{
+    text-align:justify;  
+    text-justify:inter-word;
 }

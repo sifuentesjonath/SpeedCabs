@@ -1,7 +1,8 @@
 {
   "name": "Speed_Cabs",
   "integrations": {
-    "cordova": {}
+    "cordova": {},
+    "capacitor": {}
   },
   "type": "angular"
 }

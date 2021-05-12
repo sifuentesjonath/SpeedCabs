@@ -88,6 +88,7 @@ export class EditProfilePage implements OnInit {
             this.dismiss();
             if(this.fire.get_check()==true){
               this.storage.set('NombreC',this.datos.value.nombre+' '+this.datos.value.apellido);  
+              this.storage.set('PhoneC',this.datos.value.celular);
               this.message_.successfull_edit();
             }
             else{

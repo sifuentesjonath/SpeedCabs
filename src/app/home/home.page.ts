@@ -24,7 +24,8 @@ export class HomePage implements OnInit {
   searchDisabled: boolean;
   saveDisabled: boolean;
   location: any;
-  direccion:any;
+  direccion:string="";
+  direccion_:any="";
   map:any;
   GoogleAutocomplete: any;
   placeid:string='';
@@ -91,28 +92,29 @@ export class HomePage implements OnInit {
   ///
   private geocode(marker,storage){
     // creamos el objeto geodecoder
+    var that=this;
     var geocoder = new google.maps.Geocoder();
     let infoWindow;
      // solo se utiliza la función del geocoder para que al cargar se muestre la onformación
       geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            this.direccion=results[0]['formatted_address'];
-            let content='<h6 style="color:black;">Información:</h6>'+'<ion-text style="color:black;">'+this.direccion+'</ion-text>';
+        if ( status == "OK") {
+            that.direccion=results[0]['formatted_address'];
+            let content='<h6 style="color:black;">Información:</h6>'+'<ion-text style="color:black;">'+that.direccion+'</ion-text>';
             infoWindow=new google.maps.InfoWindow({content:content}); 
-            infoWindow.open(this.direccion,marker);
-            storage.set('ubicacionC',this.direccion);   
+            infoWindow.open(that.direccion,marker);
+            storage.set('ubicacionC',that.direccion);   
         }
       });
       // le asignamos una funcion al eventos dragend del marcado    
       google.maps.event.addListener(marker,'dragend',function(){
         infoWindow.close();
         geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
-          if (status == google.maps.GeocoderStatus.OK) {
-              this.direccion=results[0]['formatted_address'];
-              let content='<h6 style="color:black;">Información:</h6>'+'<ion-text style="color:black;">'+this.direccion+'</ion-text>';
+          if (status == "OK") {
+              that.direccion=results[0]['formatted_address'];
+              let content='<h6 style="color:black;">Información:</h6>'+'<ion-text style="color:black;">'+that.direccion+'</ion-text>';
               infoWindow=new google.maps.InfoWindow({content:content}); 
-              infoWindow.open(this.direccion,marker);
-              storage.set('ubicacionC',this.direccion);   
+              infoWindow.open(that.direccion,marker);
+              storage.set('ubicacionC',that.direccion);   
           }
         });   
       });
@@ -139,8 +141,8 @@ export class HomePage implements OnInit {
     let storage=this.storage;
     geocoder.geocode({'latLng': latLng},function(results, status){
       if(status==google.maps.GeocoderStatus.OK) {   
-        that.direccion=results[0]['formatted_address'];
-        storage.set('ubicacionCD',that.direccion);
+        that.direccion_=results[0]['formatted_address'];
+        storage.set('ubicacionCD',that.direccion_);
         that.saveDisabled = false; 
       }
       that.message.dismiss_loding();
@@ -221,6 +223,25 @@ export class HomePage implements OnInit {
  private  async save(){
     //this.router.navigate(['/traveling']);
     //this.geocode(this.marker,this.storage);
+    this.storage.get('ubicacionC').then(async(origen) => {
+      this.storage.get('ubicacionCD').then(async(destino) => { 
+          if(origen!=null&&destino!=null){
+            this.redict_request();
+          }
+          else{
+              if(this.direccion.length>0&&this.direccion_.length>0){
+                this.storage.set('ubicacionC',this.direccion);
+                this.storage.set('ubicacionCD',this.direccion_);
+                this.redict_request();
+              }
+              else{
+                this.message.warning_locations();
+              }
+          }
+      });
+    });
+  }
+  private async redict_request(){
     this.marker.setMap(null);
     this.calculateAndDisplayRoute_();
     this.router.navigate(['/request']);

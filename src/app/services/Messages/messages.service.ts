@@ -140,13 +140,23 @@ export class MessagesService {
     });
     await alert.present();
   }
+  async warning_locations() {
+    const alert = await this.alertCtrl.create({
+      //cssClass: 'my-custom-class',
+      header:'Advertencia',
+      //subHeader: 'Error',
+      message:"La ubicación no fue definida corectamente, intentelo de nuevo",
+      buttons: ['Entendido']
+    });
+    await alert.present();
+  }
   ///
   async successfull_checkIn() {
     const alert = await this.alertCtrl.create({
       //cssClass: 'my-custom-class',
-      header:'Perfecto',
+      header:'Exito al registrarse',
       //subHeader: 'Error',
-      message:"Exito al registrarse.",
+      message:"Por favor revise su bandeja de entrada y verifique su correo electrónico",
       buttons: ['Entendido']
     });
     await alert.present();

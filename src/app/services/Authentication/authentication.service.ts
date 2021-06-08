@@ -8,9 +8,13 @@ export class AuthenticationService {
   //private authState:boolean= false;
   constructor(private afAuth: AngularFireAuth) { 
   }
+  private async sendVerificationEmail(): Promise<void> {
+    return (await this.afAuth.auth.currentUser).sendEmailVerification();
+  }
   public async registerUser(correo,password) {
     await new Promise<any>((resolve,reject) => {
-      this.afAuth.auth.createUserWithEmailAndPassword(correo,password).then(res =>{ 
+      this.afAuth.auth.createUserWithEmailAndPassword(correo,password).then(async(res) =>{ 
+        await this.sendVerificationEmail();        
         resolve(res);
       }).catch((err)=>{
         reject(err);

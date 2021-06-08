@@ -21,6 +21,8 @@ export class LoginPage implements OnInit {
   correoO:String;
   private client:any={};
   private datos: FormGroup;
+  private showPassword:boolean=false;
+  private passwordToggleIcon:string='eye';
   constructor(private storage: Storage,private formBuilder: FormBuilder,private fire:FirebaseService,private message:MessagesService,private router:Router,private menu:MenuController) {
     this.menu.enable(false);
     this.datos = this.formBuilder.group({
@@ -32,7 +34,15 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
   ionViewCanEnter(){}
-
+  private togglePassword():void{
+    this.showPassword=!this.showPassword;
+    if(this.passwordToggleIcon=='eye'){
+      this.passwordToggleIcon='eye-off';
+    }
+    else{
+      this.passwordToggleIcon='eye';
+    }
+  }
   private async enter_home(){
     var body={correo:this.datos.value.correo,password:this.datos.value.password};
     this.message.loading();

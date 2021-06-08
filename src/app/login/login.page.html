@@ -19,7 +19,8 @@
       </ion-item>
       <ion-item>
         <ion-label position="floating">Contraseña</ion-label>
-        <ion-input type="password" name="password" formControlName="password"></ion-input>
+        <ion-input name="password" formControlName="password" [type]="showPassword ? 'text': 'password'"></ion-input>
+        <ion-icon slot="end" [name]="passwordToggleIcon" (click)="togglePassword()"></ion-icon>
       </ion-item>
       <ion-col class="ion-padding">
         <div><ion-button color="white" size="small" fill="clear" (tap)="passwordR()" (click)="passwordR()"><p>¿Olvidaste tu contraseña?</p></ion-button></div>

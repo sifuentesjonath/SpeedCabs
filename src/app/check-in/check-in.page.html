@@ -33,11 +33,13 @@
       </ion-item>      
       <ion-item>
         <ion-label position="floating">Contraseña</ion-label>
-        <ion-input (touchstart)="message(4)" type="password" formControlName="password"></ion-input>
+        <ion-input (touchstart)="message(4)" formControlName="password" [type]="showPassword ? 'text': 'password'"></ion-input>
+        <ion-icon slot="end" [name]="passwordToggleIcon" (click)="togglePassword()"></ion-icon>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Confirmar Contraseña</ion-label>
-        <ion-input  (touchstart)="message(5)" type="password" formControlName="passwordC"></ion-input>
+        <ion-input  (touchstart)="message(5)" formControlName="passwordC" [type]="showPassword ? 'text': 'password'"></ion-input>
+        <ion-icon slot="end" [name]="passwordToggleIcon" (click)="togglePassword()"></ion-icon>
       </ion-item>
       <ion-grid>
         <ion-row>

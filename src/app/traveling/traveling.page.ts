@@ -121,11 +121,23 @@ export class TravelingPage implements OnInit {
     var get_t=this.fire.get_travel(this.idV).subscribe((answer)=>{
       if(answer.idEmployee!=''&&answer.state!=''){
         this.messageT=answer.state;
-        if(answer.state=='Cancelado'){
+        if(answer.state=='Cancelado'||answer.state=='Finalizado'){
           this.storage.set('Travel',null);
-          this.storage.set('idV',null);    
-          this.subscriptions_.unsubscribe();
+          this.storage.set('idV',null); 
+          this.idV='';
+          this.txts.txtM='';
+          this.txts.txtP='';
+          this.txts.txtO='';
+          this.origen='';
+          this.txts.txtD='';
+          this.destino='';
+          this.imgP='assets/imgs/perfil.png';
+          this.txts.txtC='';
+          this.conductor='';
+          this.txts.txtCosto='';
+          this.costo='';    
           this.router.navigate(['/home']);
+          this.subscriptions_.unsubscribe();
         }
       }
     });

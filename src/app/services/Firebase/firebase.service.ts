@@ -80,31 +80,13 @@ export class FirebaseService {
     return await this.auts.loginUser(body);  
   }
   public async check_in(date,pass){
-    this.check=false;  
-    await this.comparemail_phone(date).then(()=>{
-      setTimeout(()=>{
-        if(this.get_compare()==true){
-          var res_=this.clientsCollection.add(date);
-          if(res_){
-            this.auts.registerUser(date.email,pass).then(()=>{
-              this.check=true;
-              return;
-            }).catch(err=>{
-              this.check=false;
-              return;
-            });
-          }
-          else{
-            this.check=false;
-          }
-        } 
-      },300);  
-    });
+    var res_=await this.clientsCollection.add(date);
+    return await this.auts.registerUser(date.email,pass); 
   }
   public async comparemail_phone(date){
     this.compare=false;
     return new Promise<any>(async(resolve,reject) => {
-      await this.client.subscribe(result=>{
+      await this.clients.subscribe(result=>{
         result.map(res=>{
           if(res.email!=date.email&&res.phone!=date.phone){   
             this.compare=true;
